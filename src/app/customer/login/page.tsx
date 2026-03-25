@@ -28,7 +28,7 @@ const UltimateCustomerLogin = () => {
           
           <h1 className="text-7xl font-black leading-[0.9] tracking-tighter">
             Digital <br />
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-accent to-secondary">Ecosystem.</span>
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-accent to-secondary">Chatsystem.</span>
           </h1>
           
           <p className="text-lg text-gray-400 font-light max-w-md leading-relaxed">
