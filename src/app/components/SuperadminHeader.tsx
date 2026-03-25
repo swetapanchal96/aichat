@@ -85,7 +85,7 @@ const SuperAdminHeader = () => {
                 <div className="flex justify-between items-center h-20">
 
                     {/* Logo Section */}
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                         <Link href="/">
                             <Image src={logo} alt="Salexo Logo" width={140} height={45} priority />
                         </Link>
@@ -93,9 +93,9 @@ const SuperAdminHeader = () => {
 
                     {/* Center Navigation */}
                     <nav className="hidden md:flex space-x-8 items-center">
-                        <Link href="/dashboard" className="text-gray-600 hover:text-[#1d3557] font-medium">Dashboard</Link>
-                        <Link href="/customers" className="text-gray-600 hover:text-[#1d3557] font-medium">Customer</Link>
-                        <Link href="/inactive-customers" className="text-gray-600 hover:text-[#1d3557] font-medium">Inactive Customer</Link>
+                        <Link href="/superadmin/dashboard" className="text-gray-600 hover:text-[#1d3557] font-medium">Dashboard</Link>
+                        <Link href="/superadmin/customer" className="text-gray-600 hover:text-[#1d3557] font-medium">Customer</Link>
+                        <Link href="/superadmin/inactive-customer" className="text-gray-600 hover:text-[#1d3557] font-medium">Inactive Customer</Link>
                     </nav>
 
                     {/* Profile Dropdown Section */}
@@ -107,7 +107,7 @@ const SuperAdminHeader = () => {
 
                             <div className="w-10 h-10 bg-gray-100 rounded-full border border-gray-200 flex items-center justify-center overflow-hidden hover:border-[#1d3557] transition-all">
                                 {/* Fallback Avatar Icon */}
-                                <svg className="w-6 h-6 text-[#70a0bf]" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-6 h-6 text-accent" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                                 </svg>
                             </div>
