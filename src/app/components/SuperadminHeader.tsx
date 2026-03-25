@@ -50,7 +50,7 @@
                             {[
                                 { name: 'Dashboard', href: '/superadmin/dashboard' },
                                 { name: 'Customers', href: '/superadmin/customer' },
-                                { name: 'Inactive', href: '/superadmin/inactive-customer' },
+                                { name: 'Inactive customer', href: '/superadmin/inactive-customer' },
                             ].map((item) => (
                                 <Link
                                     key={item.name}
