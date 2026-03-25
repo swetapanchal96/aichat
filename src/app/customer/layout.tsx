@@ -24,6 +24,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         pathname === "/customer/register" ||
         pathname === "/customer/otp";
 
+        if (hidelayout) {
+        return <main className="min-h-screen bg-background">{children}</main>;
+    }
+
     return (
         <>
             {/* <RoleGuard roleRequired="admin"> */}
