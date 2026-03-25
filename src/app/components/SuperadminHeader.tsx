@@ -49,8 +49,8 @@
                         <nav className="hidden lg:flex items-center space-x-1">
                             {[
                                 { name: 'Dashboard', href: '/superadmin/dashboard' },
-                                { name: 'Customers', href: '/superadmin/customers' },
-                                { name: 'Inactive', href: '/superadmin/inactive-customers' },
+                                { name: 'Customers', href: '/superadmin/customer' },
+                                { name: 'Inactive', href: '/superadmin/inactive-customer' },
                             ].map((item) => (
                                 <Link
                                     key={item.name}
@@ -70,7 +70,7 @@
                             className={`flex items-center p-1.5 rounded-full border transition-all duration-300 ${isOpen ? 'border-accent bg-background shadow-inner' : 'border-transparent hover:bg-gray-50'
                                 }`}
                         >
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-white shadow-md hover:rotate-12 transition-transform duration-300">
+                            <div className="w-8 h-8 rounded-full bg-linear-to-tr from-primary to-secondary flex items-center justify-center text-white shadow-md hover:rotate-12 transition-transform duration-300">
                                 <BsPerson size={18} />
                             </div>
                             <BsChevronDown
@@ -83,7 +83,7 @@
                         {isOpen && (
                             <>
                                 <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)}></div>
-                                <div className="absolute right-0 mt-3 w-60 bg-white/95 backdrop-blur-xl rounded-[24px] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] border border-gray-100 py-2.5 z-20 overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-300 ease-out">
+                                <div className="absolute right-0 mt-3 w-60 bg-white/95 backdrop-blur-xl rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] border border-gray-100 py-2.5 z-20 overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-300 ease-out">
                                     <div className="px-5 py-3 mb-1 border-b border-gray-50">
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Management</p>
                                         <p className="text-sm font-bold text-primary truncate">Admin User</p>
