@@ -110,6 +110,22 @@ const SuperAdminHeader = () => {
     };
 
     return (
+        <header className="w-full bg-white border-b border-gray-100 shadow-sm relative">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center h-20">
+
+                    {/* Logo Section */}
+                    <div className="shrink-0">
+                        <Link href="/">
+                            <Image src={logo} alt="Salexo Logo" width={140} height={45} priority />
+                        </Link>
+                    </div>
+
+                    {/* Center Navigation */}
+                    <nav className="hidden md:flex space-x-8 items-center">
+                        <Link href="/superadmin/dashboard" className="text-gray-600 hover:text-[#1d3557] font-medium">Dashboard</Link>
+                        <Link href="/superadmin/customer" className="text-gray-600 hover:text-[#1d3557] font-medium">Customer</Link>
+                        <Link href="/superadmin/inactive-customer" className="text-gray-600 hover:text-[#1d3557] font-medium">Inactive Customer</Link>
         <header
             className={`fixed top-0 w-full z-50 transition-all duration-500 ease-in-out ${scrolled
                 ? "bg-white/80 backdrop-blur-lg h-16 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.1)] border-b border-gray-100"
