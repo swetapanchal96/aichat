@@ -53,7 +53,7 @@ const Dashboard = () => {
                         <div
                             key={idx}
                             style={{ animationDelay: `${idx * 100}ms` }}
-                            className="relative bg-white p-7 rounded-[24px] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] border border-gray-50 flex justify-between items-start group overflow-hidden cursor-default animate-in zoom-in-95 slide-in-from-bottom-4 duration-500 fill-mode-both"
+                            className="relative bg-white p-7 rounded-3xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] border border-gray-50 flex justify-between items-start group overflow-hidden cursor-default animate-in zoom-in-95 slide-in-from-bottom-4 duration-500 fill-mode-both"
                         >
                             {/* Hover Fill Layer */}
                             <div className={`absolute inset-0 ${card.color} translate-y-[102%] group-hover:translate-y-0 transition-transform duration-500 ease-out z-0`} />

@@ -11,10 +11,10 @@ const inputCls = "mt-2 w-full rounded-2xl border border-transparent bg-gray-50 p
 export default function SuperAdminProfilePage() {
     // Mock data for design reference
     const profile = {
-        fullName: "Alexander Wright",
+        fullName: "Krunal Shah",
         email: "admin@salexo.com",
         phone: "+91 98765 43210",
-        initials: "AW"
+        initials: "KS"
     };
 
     return (
@@ -33,16 +33,16 @@ export default function SuperAdminProfilePage() {
                     </div>
                 </div>
 
-                <section className="relative overflow-hidden rounded-[32px] border border-gray-100 bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)]">
+                <section className="relative overflow-hidden rounded-4xl border border-gray-100 bg-white shadow-[0_30px_70px_-15px_rgba(44,68,107,0.2)]">
 
                     {/* Decorative Top Accent */}
-                    <div className="h-2 w-full bg-gradient-to-r from-primary via-secondary to-accent" />
+                    <div className="h-2 w-full bg-linear-to-r from-primary via-secondary to-accent" />
 
                     <div className="p-8 sm:p-12">
                         {/* Profile Hero */}
                         <div className="flex flex-col items-center text-center">
                             <div className="relative group">
-                                <div className="h-28 w-28 rounded-[32px] bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-xl shadow-primary/20 transition-transform duration-500 hover:rotate-3">
+                                <div className="h-28 w-28 rounded-4xl bg-linear-to-br from-primary to-secondary flex items-center justify-center text-white shadow-xl shadow-primary/20 transition-transform duration-500 hover:rotate-3">
                                     <span className="text-4xl font-bold tracking-tighter">{profile.initials}</span>
                                 </div>
                                 <div className="absolute -bottom-2 -right-2 h-10 w-10 bg-white rounded-xl shadow-lg border border-gray-50 flex items-center justify-center text-secondary">
@@ -99,10 +99,7 @@ export default function SuperAdminProfilePage() {
                     </div>
                 </section>
 
-                {/* Security Footer Note */}
-                <p className="mt-8 text-center text-[12px] font-medium text-gray-400">
-                    Last profile update: <span className="text-primary/60 font-bold">March 25, 2026</span>
-                </p>
+
             </div>
         </main>
     );

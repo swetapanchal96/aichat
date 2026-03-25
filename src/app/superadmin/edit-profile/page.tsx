@@ -19,7 +19,7 @@ export default function SuperAdminEditProfilePage() {
 
     // Form States
     const [showPass, setShowPass] = useState({ old: false, new: false, confirm: false });
-    const [profile, setProfile] = useState({ fullName: "Alexander Wright", email: "admin@salexo.com", phone: "+91 98765 43210" });
+    const [profile, setProfile] = useState({ fullName: "Krunal Shah", email: "admin@salexo.com", phone: "+91 98765 43210" });
 
     return (
         <main className="min-h-screen bg-background text-primary animate-in fade-in duration-700">
@@ -58,7 +58,7 @@ export default function SuperAdminEditProfilePage() {
                     </div>
                 </div>
 
-                <section className="relative overflow-hidden rounded-[32px] border border-gray-100 bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)]">
+                <section className="relative overflow-hidden rounded-4xl border border-gray-100 bg-white shadow-[0_30px_70px_-15px_rgba(44,68,107,0.2)]">
                     <div className="p-8 sm:p-12">
 
                         {tab === "details" ? (
