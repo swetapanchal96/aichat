@@ -6,6 +6,8 @@
   --color-secondary: #2e628c;
   --color-accent: #70a0bf;
 }
+
+/* 
 .salexo-section {
   min-height: 100vh;
   display: flex;
@@ -231,7 +233,7 @@
   z-index: 5;
 }
 
-/* badge */
+
 .growth-badge {
   display: inline-flex;
   align-items: center;
@@ -298,7 +300,7 @@
   animation: floatCard 5s ease-in-out infinite;
 }
 
-/* responsive */
+
 @media (max-width: 1199px) {
   .salexo-socials {
     right: -30px;
@@ -369,4 +371,4 @@
     justify-content: center;
     padding: 16px 24px;
   }
-}
+} */
