@@ -1,10 +1,9 @@
-import Image from "next/image";
-import SuperAdminHeader from "./components/SuperadminHeader";
+import Hero from "./components/Hero";
 
 export default function Home() {
   return (
     <>
-      {/* <SuperAdminHeader /> */}
+      <Hero />
     </>
   );
 }
