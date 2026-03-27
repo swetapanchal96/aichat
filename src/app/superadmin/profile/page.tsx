@@ -3,6 +3,23 @@
 import Link from "next/link";
 import { FiEdit2, FiUser, FiMail, FiPhone, FiShield } from "react-icons/fi";
 import { BsPatchCheckFill } from "react-icons/bs";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { apiUrl } from "@/config";
+import { getAuthHeader } from "@/utils/auth";
+
+interface ProfileResponse {
+    success: boolean;
+    message: string;
+    data: {
+        id: number;
+        created_at: string;
+        name: string;
+        email: string;
+        password: string;
+        phone: number;
+    };
+}
 
 // Refined Tailwind Classes for a Premium Feel
 const labelCls = "text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] ml-1";
@@ -10,12 +27,47 @@ const inputCls = "mt-2 w-full rounded-2xl border border-transparent bg-gray-50 p
 
 export default function SuperAdminProfilePage() {
     // Mock data for design reference
-    const profile = {
-        fullName: "Krunal Shah",
-        email: "admin@salexo.com",
-        phone: "+91 98765 43210",
-        initials: "KS"
+    const [profile, setProfile] = useState({
+        fullName: "",
+        email: "",
+        phone: "",
+        initials: ""
+    });
+
+    const token = localStorage.getItem("superadmintoken");
+    console.log(token , "token");
+    
+
+    useEffect(() => {
+    const fetchProfile = async () => {
+        try {
+            const res = await axios.post<ProfileResponse>(
+                `${apiUrl}/reg/getprofile`,{},
+                {
+                    headers: getAuthHeader(),
+                }
+            );
+
+            const user = res.data.data;
+
+            setProfile({
+                fullName: user.name,
+                email: user.email,
+                phone: String(user.phone),
+                initials: user.name
+                    .split(" ")
+                    .map((n:any) => n[0])
+                    .join("")
+                    .toUpperCase()
+            });
+
+        } catch (error) {
+            console.error("Failed to fetch profile", error);
+        }
     };
+
+    fetchProfile();
+}, []);
 
     return (
         <main className="min-h-screen bg-background text-primary animate-in fade-in duration-700">

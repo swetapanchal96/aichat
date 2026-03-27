@@ -1,12 +1,28 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 import {
     FiUser, FiLock, FiMail, FiPhone, FiEye, FiEyeOff,
     FiArrowLeft, FiCheckCircle
 } from "react-icons/fi";
 import { BsShieldLockFill } from "react-icons/bs";
+import axios from 'axios';
+import { apiUrl } from '@/config';
+import { getAuthHeader } from '@/utils/auth';
+
+interface ProfileResponse {
+    success: boolean;
+    message: string;
+    data: {
+        id: number;
+        created_at: string;
+        name: string;
+        email: string;
+        password: string;
+        phone: number;
+    };
+}
 
 // Refined UI Constants
 const labelCls = "text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] ml-1";
@@ -16,10 +32,42 @@ export default function SuperAdminEditProfilePage() {
     const router = useRouter();
     const [tab, setTab] = useState<"details" | "password">("details");
     const [isSaving, setIsSaving] = useState(false);
+    const [profile, setProfile] = useState({
+        fullName: "",
+        email: "",
+        phone: ""
+    });
 
     // Form States
     const [showPass, setShowPass] = useState({ old: false, new: false, confirm: false });
-    const [profile, setProfile] = useState({ fullName: "Krunal Shah", email: "admin@salexo.com", phone: "+91 98765 43210" });
+
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await axios.post<ProfileResponse>(
+                    `${apiUrl}/reg/getprofile`,
+                    {},
+                    {
+                        headers: getAuthHeader(),
+                    }
+                );
+
+                const user = res.data.data;
+
+                setProfile({
+                    fullName: user.name,
+                    email: user.email,
+                    phone: String(user.phone)
+                });
+
+            } catch (error) {
+                console.error("Failed to fetch profile", error);
+            }
+        };
+
+        fetchProfile();
+    }, []);
 
     return (
         <main className="min-h-screen bg-background text-primary animate-in fade-in duration-700">
@@ -75,14 +123,14 @@ export default function SuperAdminEditProfilePage() {
                                         <label className={labelCls}>Full Name</label>
                                         <div className="relative">
                                             <FiUser className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors" />
-                                            <input defaultValue={profile.fullName} className={`${inputCls} pl-12`} />
+                                            <input value={profile.fullName} className={`${inputCls} pl-12`} />
                                         </div>
                                     </div>
                                     <div className="group">
                                         <label className={labelCls}>Phone Number</label>
                                         <div className="relative">
                                             <FiPhone className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors" />
-                                            <input defaultValue={profile.phone} className={`${inputCls} pl-12`} />
+                                            <input value={profile.phone} className={`${inputCls} pl-12`} />
                                         </div>
                                     </div>
                                 </div>
@@ -90,7 +138,7 @@ export default function SuperAdminEditProfilePage() {
                                     <label className={labelCls}>Email Address</label>
                                     <div className="relative">
                                         <FiMail className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors" />
-                                        <input defaultValue={profile.email} className={`${inputCls} pl-12`} />
+                                        <input value={profile.email} className={`${inputCls} pl-12`} />
                                     </div>
                                 </div>
                             </div>

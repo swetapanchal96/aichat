@@ -9,8 +9,15 @@ import { toast } from 'react-toastify';
 
 interface LoginResponse {
   message: string;
-  name: string;
   token: string;
+  data: {
+    id: number;
+    created_at: string;
+    name: string;
+    email: string;
+    password: string;
+    phone: number;
+  };
 }
 
 const AdminLogin = () => {
@@ -41,6 +48,10 @@ const AdminLogin = () => {
       // ✅ token storage
       if (res.data.token) {
         localStorage.setItem("superadmintoken", res.data.token);
+        localStorage.setItem(
+    "superadminuser",
+    JSON.stringify(res.data.data)
+  );
         toast.success(res?.data?.message || "Login successfully")
         router.push('/superadmin/dashboard')
       }
@@ -49,7 +60,7 @@ const AdminLogin = () => {
 
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
-      alert(err.response?.data || "Login failed");
+      alert(err.response?.data?.message || "Login failed");
 
     } finally {
       setLoading(false); // ✅ always stop loader
