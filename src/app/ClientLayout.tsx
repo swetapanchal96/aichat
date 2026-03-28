@@ -6,7 +6,7 @@ import Header from "./components/Header";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const hideLayout = pathname.startsWith("/admin") || pathname.startsWith("/superadmin") || pathname.startsWith("/google-register");
+  const hideLayout = pathname.startsWith("/customer") || pathname.startsWith("/superadmin") || pathname.startsWith("/google-register");
 
   return (
     <>

@@ -1,7 +1,10 @@
 // export default Dashboard;
 "use client";
 
-import React from 'react';
+import { apiUrl } from '@/config';
+import { getAuthHeader } from '@/utils/auth';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import {
     BsTicketPerforated,
     BsCalendar3,
@@ -12,15 +15,74 @@ import {
     BsArrowRightShort
 } from 'react-icons/bs';
 
+interface DashboardResponse {
+    success: boolean;
+    message: string;
+    data: {
+        today_tokens: number;
+        month_tokens: number;
+        highest_token_user: number;
+    };
+    user: {
+        companyname: string;
+        total_tokens: number;
+    }[];
+}
+
 const Dashboard = () => {
 
-    const topUsers = [
-        { id: 1, name: "Alexander Wright", tokens: 12450 },
-        { id: 2, name: "Sophia Mccarthy", tokens: 10200 },
-        { id: 3, name: "Marcus Nilsson", tokens: 9840 },
-        { id: 4, name: "Elena Rossi", tokens: 8120 },
-        { id: 5, name: "Jordan Smith", tokens: 7600 },
-    ];
+    const [stats, setStats] = useState({
+        today: 0,
+        month: 0,
+        highest: 0,
+    });
+
+    const [topUsers, setTopUsers] = useState<
+        { id: number; name: string; tokens: number }[]
+    >([]);
+
+    const [loading, setLoading] = useState(true);
+
+    // ✅ API CALL
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await axios.get<DashboardResponse>(
+                    `${apiUrl}/getsuperadminstats`,
+                    {
+                        headers: getAuthHeader(),
+                    }
+                );
+
+                const response = res.data;
+
+                // ✅ Set stats
+                setStats({
+                    today: response.data.today_tokens,
+                    month: response.data.month_tokens,
+                    highest: response.data.highest_token_user,
+                });
+
+                // ✅ Handle MULTIPLE users (sorted + mapped)
+                const mappedUsers = response.user
+                    .sort((a, b) => b.total_tokens - a.total_tokens)
+                    .map((u, index) => ({
+                        id: index,
+                        name: u.companyname,
+                        tokens: u.total_tokens,
+                    }));
+
+                setTopUsers(mappedUsers);
+
+            } catch (error) {
+                console.error("Failed to fetch dashboard stats", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
 
     return (
         <div className="p-8 bg-background min-h-screen text-foreground selection:bg-accent/30 animate-in fade-in duration-700">
@@ -46,9 +108,9 @@ const Dashboard = () => {
                 {/* --- Stats Section --- */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                     {[
-                        { label: "Today's Token", val: "124", icon: BsTicketPerforated, trend: "+12%", color: "bg-primary" },
-                        { label: "Monthly", val: "3.8k", icon: BsCalendar3, trend: "Stable", color: "bg-secondary" },
-                        { label: "Top Holder", val: "892", icon: BsTrophy, trend: "R. Sharma", color: "bg-accent" }
+                        { label: "Today's Token", val: stats.today, icon: BsTicketPerforated, trend: "+12%", color: "bg-primary" },
+                        { label: "Monthly", val: stats.month, icon: BsCalendar3, trend: "Stable", color: "bg-secondary" },
+                        { label: "Top Holder", val: stats.highest, icon: BsTrophy, trend: "R. Sharma", color: "bg-accent" }
                     ].map((card, idx) => (
                         <div
                             key={idx}
@@ -129,9 +191,9 @@ const Dashboard = () => {
                                         </div>
 
                                         {/* Hover Reveal Arrow */}
-                                        <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-gray-300 group-hover:bg-primary group-hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0">
+                                        {/* <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-gray-300 group-hover:bg-primary group-hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0">
                                             <BsArrowRightShort size={24} />
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             ))}

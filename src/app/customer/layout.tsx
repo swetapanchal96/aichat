@@ -3,28 +3,42 @@
 
 import { useEffect, useState } from "react";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import CustomerHeader from "../components/AdminHeader";
 import AdminFooter from "../components/AdminFooter";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const [hasToken, setHasToken] = useState<boolean | null>(null);
     const pathname = usePathname();
+    const router = useRouter()
+
+    const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+    const hidelayout = pathname === "/customer/login" || pathname === "/customer/logout" 
+
+    // useEffect(() => {
+    //     if (typeof window !== "undefined") {
+    //         const adminToken = localStorage.getItem("adminToken");
+    //         setHasToken(!!(adminToken));
+    //     }
+    // }, [pathname]);
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            const adminToken = localStorage.getItem("adminToken");
-            setHasToken(!!(adminToken));
+        const token = localStorage.getItem('customerToken');
+
+        if(!token && !hidelayout) {
+            router.push('/customer/login')
+        } else {
+            setIsAuthChecked(true);
         }
-    }, [pathname]);
+    }, [pathname])
 
-    const hidelayout =
-        pathname === "/customer/login" ||
-        pathname === "/customer/logout" ||
-        pathname === "/customer/register" ||
-        pathname === "/customer/otp";
+    // 🚫 BLOCK UI until auth is verified
+    if (!isAuthChecked && !hidelayout) {
+        return null; // or loader
+    }
 
-        if (hidelayout) {
+    if (hidelayout) {
         return <main className="min-h-screen bg-background">{children}</main>;
     }
 
