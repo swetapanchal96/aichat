@@ -1,156 +1,83 @@
-// "use client";
-
-// import Link from "next/link";
-// import { FiEdit3, FiMail, FiPhone, FiShield, FiCalendar, FiGlobe } from "react-icons/fi";
-// import { RiVerifiedBadgeFill } from "react-icons/ri";
-
-// export default function customerProfilePage() {
-//     const profile = {
-//         fullName: "Krunal Shah",
-//         email: "admin@salexo.com",
-//         phone: "+91 98765 43210",
-//         initials: "KS",
-//         role: "System Root",
-//         joined: "March 2024"
-//     };
-
-//     return (
-//         <main className="min-h-screen bg-[#F8FAFC] py-12 px-6 lg:px-8 font-sans selection:bg-primary/10">
-//             <div className="mx-auto max-w-5xl">
-
-//                 {/* --- Top Navigation/Header --- */}
-//                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
-
-//                     <Link
-//                         href="/customer/edit-profile"
-//                         className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white border border-slate-200 px-6 py-3 text-[13px] font-bold uppercase tracking-wider text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:border-slate-300 active:scale-95"
-//                     >
-//                         <FiEdit3 className="text-lg" />
-//                         Modify Details
-//                     </Link>
-//                 </div>
-
-//                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-
-//                     {/* --- Left Column: Hero Card --- */}
-//                     <section className="md:col-span-5 lg:col-span-4 group">
-//                         <div className="relative overflow-hidden rounded-[2.5rem] bg-slate-900 p-8 text-white shadow-2xl transition-all duration-500 hover:shadow-primary/20">
-//                             {/* Background Mesh Decor */}
-//                             <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/20 blur-3xl transition-opacity group-hover:opacity-70" />
-//                             <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-secondary/20 blur-3xl transition-opacity group-hover:opacity-70" />
-
-//                             <div className="relative z-10 flex flex-col items-center">
-//                                 <div className="relative">
-//                                     <div className="flex h-32 w-32 items-center justify-center rounded-[2rem] bg-white/10 backdrop-blur-xl border border-white/20 text-4xl font-black tracking-tighter shadow-2xl">
-//                                         {profile.initials}
-//                                     </div>
-//                                     <div className="absolute -bottom-2 -right-2 flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-lg">
-//                                         <RiVerifiedBadgeFill size={20} />
-//                                     </div>
-//                                 </div>
-
-//                                 <h2 className="mt-8 text-2xl font-bold tracking-tight">{profile.fullName}</h2>
-//                                 <p className="mt-1 text-slate-400 font-medium">Head of Operations</p>
-
-//                                 <div className="mt-6 flex flex-wrap justify-center gap-2">
-//                                     <span className="rounded-lg bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary-foreground/80 border border-white/10">
-//                                         {profile.role}
-//                                     </span>
-//                                     <span className="rounded-lg bg-emerald-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-400 border border-emerald-500/20">
-//                                         Active
-//                                     </span>
-//                                 </div>
-//                             </div>
-
-//                             <div className="mt-12 space-y-4 relative z-10 border-t border-white/10 pt-8">
-//                                 <div className="flex items-center gap-4 text-slate-400 hover:text-white transition-colors">
-//                                     <FiCalendar className="text-lg" />
-//                                     <span className="text-sm font-medium">Joined {profile.joined}</span>
-//                                 </div>
-//                                 <div className="flex items-center gap-4 text-slate-400 hover:text-white transition-colors">
-//                                     <FiGlobe className="text-lg" />
-//                                     <span className="text-sm font-medium">Timezone: IST (UTC+5:30)</span>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </section>
-
-//                     {/* --- Right Column: Information Bento Grid --- */}
-//                     <section className="md:col-span-7 lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-//                         {/* Legal Name Card */}
-//                         <div className="sm:col-span-2 rounded-[2rem] bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-md">
-//                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Identity</label>
-//                             <div className="mt-4 flex items-center justify-between">
-//                                 <div>
-//                                     <p className="text-xs font-bold text-slate-400">Full Legal Name</p>
-//                                     <p className="mt-1 text-lg font-bold text-slate-800">{profile.fullName}</p>
-//                                 </div>
-//                                 <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400">
-//                                     <FiShield size={22} />
-//                                 </div>
-//                             </div>
-//                         </div>
-
-//                         {/* Email Card */}
-//                         <div className="rounded-[2rem] bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-md">
-//                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Communication</label>
-//                             <div className="mt-6">
-//                                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mb-4">
-//                                     <FiMail size={20} />
-//                                 </div>
-//                                 <p className="text-xs font-bold text-slate-400">Email Address</p>
-//                                 <p className="mt-1 text-base font-bold text-slate-800 break-all">{profile.email}</p>
-//                             </div>
-//                         </div>
-
-//                         {/* Phone Card */}
-//                         <div className="rounded-[2rem] bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-md">
-//                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Connection</label>
-//                             <div className="mt-6">
-//                                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-600 mb-4">
-//                                     <FiPhone size={20} />
-//                                 </div>
-//                                 <p className="text-xs font-bold text-slate-400">Phone Number</p>
-//                                 <p className="mt-1 text-base font-bold text-slate-800">{profile.phone}</p>
-//                             </div>
-//                         </div>
-
-//                         {/* Security Card */}
-//                         <div className="sm:col-span-2 flex items-center justify-between rounded-[2rem] bg-slate-100/50 p-6 border border-dashed border-slate-200">
-//                             <div className="flex items-center gap-4">
-//                                 <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-//                                 <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
-//                                     Multi-factor Authentication Active
-//                                 </span>
-//                             </div>
-//                             <button className="text-[11px] font-black uppercase tracking-tighter text-primary hover:underline">
-//                                 View Security Logs
-//                             </button>
-//                         </div>
-
-//                     </section>
-//                 </div>
-//             </div>
-//         </main>
-//     );
-// }
 
 "use client";
 
+import { apiUrl } from "@/config";
+import { getCustomerAuthHeader } from "@/utils/auth";
+import axios from "axios";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { FiEdit3, FiMail, FiPhone, FiShield, FiCalendar, FiGlobe, FiArrowRight } from "react-icons/fi";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
+import { toast } from "react-toastify";
+
+interface CustomerProfileResponse {
+    success: boolean;
+    message: string;
+    data: {
+        id: string;
+        email: string;
+        trial_start: string;
+        trial_end: string;
+        is_paid: boolean;
+        created_at: string;
+        company_id: string;
+        companyname: string;
+        isactive: boolean;
+        script: string;
+        phone: number | string;
+    };
+}
 
 export default function CustomerProfilePage() {
-    const profile = {
-        fullName: "Krunal Shah",
-        email: "admin@salexo.com",
-        phone: "+91 98765 43210",
-        initials: "KS",
-        role: "Head of Operations",
-        joined: "March 2024"
+    const [profile, setProfile] = useState({
+        fullName: "",
+        email: "",
+        phone: "",
+        initials: "",
+        role: "",
+        joined: "",
+        companyName: "",
+    });
+
+    useEffect(() => {
+    const fetchProfile = async () => {
+        try {
+            const res = await axios.post<CustomerProfileResponse>(
+                `${apiUrl}/reg/getuserprofile`,
+                {},
+                {
+                    headers: getCustomerAuthHeader(),
+                }
+            );
+
+            const data = res.data.data;
+
+            setProfile({
+                fullName: data.companyname || "N/A",
+                email: data.email,
+                phone: data.phone ? String(data.phone) : "N/A",
+                initials: data.companyname
+                    ?.split(" ")
+                    .map((w) => w[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase(),
+                role: data.is_paid ? "Paid User" : "Trial User",
+                joined: new Date(data.created_at).toLocaleDateString("en-IN", {
+                    month: "long",
+                    year: "numeric",
+                }),
+                companyName: data.companyname,
+            });
+
+        } catch (error:any) {
+            // console.error("Failed to fetch profile", error);
+            toast.error(error?.response?.data?.message);
+        }
     };
+
+    fetchProfile();
+}, []);
 
     return (
         <main className="min-h-screen bg-slate-50 py-12 px-6 lg:px-8 font-sans selection:bg-primary/20">
@@ -159,7 +86,7 @@ export default function CustomerProfilePage() {
                 {/* --- Header Section --- */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b border-slate-200 pb-8">
                     <div className="space-y-1">
-                 
+
                         <h1 className="text-4xl font-bold tracking-tight text-primary md:text-5xl">
                             Account <span className="text-accent font-light">Settings</span>
                         </h1>
@@ -220,7 +147,7 @@ export default function CustomerProfilePage() {
                     <section className="md:col-span-7 lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in fade-in slide-in-from-right-8 duration-700 delay-300 fill-mode-both">
 
                         {/* Legal Name Card */}
-                        <div className="sm:col-span-2 group rounded-[2rem] bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
+                        <div className="sm:col-span-2 group rounded-4xl bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Personal Identifier</label>
@@ -234,7 +161,7 @@ export default function CustomerProfilePage() {
                         </div>
 
                         {/* Email Card */}
-                        <div className="group rounded-[2rem] bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
+                        <div className="group rounded-4xl bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
                             <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-secondary mb-6 group-hover:scale-110 transition-transform shadow-inner">
                                 <FiMail size={22} />
                             </div>
@@ -244,7 +171,7 @@ export default function CustomerProfilePage() {
                         </div>
 
                         {/* Phone Card */}
-                        <div className="group rounded-[2rem] bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
+                        <div className="group rounded-4xl bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
                             <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-secondary mb-6 group-hover:scale-110 transition-transform shadow-inner">
                                 <FiPhone size={22} />
                             </div>
