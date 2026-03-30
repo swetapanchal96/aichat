@@ -1,16 +1,175 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
+import axios from 'axios';
+import { getCustomerAuthHeader } from '@/utils/auth';
+import { toast } from 'react-toastify';
+import { apiUrl } from '@/config';
 
 // Refined UI Constants using your theme
 const labelCls = "text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 block ml-1";
 const inputCls = "w-full rounded-2xl border-2 border-gray-50 bg-gray-50/50 px-12 py-4 text-[15px] font-semibold text-primary focus:outline-none focus:bg-white focus:ring-8 focus:ring-accent/5 focus:border-accent transition-all duration-300 placeholder:text-gray-300 shadow-sm";
 
+interface CustomerProfileResponse {
+    success: boolean;
+    message: string;
+    data: {
+        id: string;
+        email: string;
+        trial_start: string;
+        trial_end: string;
+        is_paid: boolean;
+        created_at: string;
+        company_id: string;
+        companyname: string;
+        isactive: boolean;
+        script: string;
+        phone: number | string;
+    };
+}
+
 export default function CustomerEditProfilePage() {
     const router = useRouter();
     const [tab, setTab] = useState<"details" | "password">("details");
+    const [isSaving, setIsSaving] = useState(false);
     const [showPass, setShowPass] = useState({ old: false, new: false, confirm: false });
+
+    const [profile, setProfile] = useState({
+        fullName: "",
+        email: "",
+        phone: "",
+    });
+
+    const [passwordData, setPasswordData] = useState({
+        oldpass: "",
+        changedpass: "",
+        confirmedpass: ""
+    });
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await axios.post<CustomerProfileResponse>(
+                    `${apiUrl}/reg/getuserprofile`,
+                    {},
+                    {
+                        headers: getCustomerAuthHeader(),
+                    }
+                );
+
+                const data = res.data;
+
+                setProfile({
+                    fullName: data.data.companyname || "",
+                    email: data.data.email || "",
+                    phone: data.data.phone ? String(data.data.phone) : "", // 🔥 FIX
+                });
+
+
+            } catch (error: any) {
+                toast.error(error?.response?.data?.message);
+                // console.error("Failed to fetch profile", error);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
+
+    const handleUpdateProfile = async () => {
+        try {
+            setIsSaving(true);
+
+            const payload = {
+                name: profile.fullName,
+                email: profile.email,
+                phone: profile.phone, // already string (API will handle)
+            };
+
+            const res = await axios.post(
+                `${apiUrl}/reg/edituserprofile`,
+                payload,
+                {
+                    headers: getCustomerAuthHeader(),
+                }
+            );
+
+            if (res.data.success) {
+                console.log("Profile updated successfully");
+
+                toast.success(res?.data?.message || "Profile updated successfully");
+
+                // Optional: update state with latest response
+                setProfile({
+                    fullName: res.data.data.companyname || "",
+                    email: res.data.data.email || "",
+                    phone: res.data.data.phone
+                        ? String(res.data.data.phone)
+                        : "",
+                });
+            }
+
+        } catch (error: any) {
+            // console.error("Update failed", error);
+            toast.error(error?.response?.data?.message);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleChangePassword = async () => {
+        try {
+            setIsSaving(true);
+
+            // 🔒 Basic validation
+            if (
+                !passwordData.oldpass ||
+                !passwordData.changedpass ||
+                !passwordData.confirmedpass
+            ) {
+                console.error("All fields are required");
+                return;
+            }
+
+            if (passwordData.changedpass !== passwordData.confirmedpass) {
+                console.error("Passwords do not match");
+                return;
+            }
+
+            const payload = {
+                oldpass: passwordData.oldpass,
+                changedpass: passwordData.changedpass,
+                confirmedpass: passwordData.confirmedpass,
+            };
+
+            const res = await axios.post(
+                `${apiUrl}/reg/changeuserpassword`,
+                payload,
+                {
+                    headers: getCustomerAuthHeader(),
+                }
+            );
+
+            if (res.data.success) {
+                
+                // Clear fields after success
+                setPasswordData({
+                    oldpass: "",
+                    changedpass: "",
+                    confirmedpass: ""
+                });
+
+                toast.success(res?.data?.message || "Password updated successfully")
+            }
+
+        } catch (error:any) {
+            console.error("Password update failed", error);
+            toast.error(error?.response?.data?.message || "Password update failed")
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     return (
         <main className="min-h-screen bg-background text-primary selection:bg-accent/10 pb-20 font-sans">
@@ -35,7 +194,7 @@ export default function CustomerEditProfilePage() {
                     <div className="flex bg-gray-100/80 p-1.5 rounded-2xl border border-gray-200/50 backdrop-blur-sm shadow-inner">
                         <button
                             onClick={() => setTab("details")}
-                            className={`flex items-center gap-3 px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${tab === "details" ? "bg-white text-primary shadow-md scale-[1.02]" : "text-gray-400 hover:text-primary"
+                            className={`flex items-center cursor-pointer gap-3 px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${tab === "details" ? "bg-white text-primary shadow-md scale-[1.02]" : "text-gray-400 hover:text-primary"
                                 }`}
                         >
                             <svg className={`w-4 h-4 ${tab === "details" ? "text-accent" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
@@ -43,7 +202,7 @@ export default function CustomerEditProfilePage() {
                         </button>
                         <button
                             onClick={() => setTab("password")}
-                            className={`flex items-center gap-3 px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${tab === "password" ? "bg-white text-primary shadow-md scale-[1.02]" : "text-gray-400 hover:text-primary"
+                            className={`flex items-center cursor-pointer gap-3 px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${tab === "password" ? "bg-white text-primary shadow-md scale-[1.02]" : "text-gray-400 hover:text-primary"
                                 }`}
                         >
                             <svg className={`w-4 h-4 ${tab === "password" ? "text-accent" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
@@ -65,7 +224,11 @@ export default function CustomerEditProfilePage() {
                                         <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors">
                                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                                         </div>
-                                        <input defaultValue="Krunal Shah" className={inputCls} />
+                                        <input
+                                            value={profile.fullName}
+                                            onChange={(e) => setProfile({ ...profile, fullName: e.target.value })}
+                                            className={inputCls}
+                                        />
                                     </div>
                                 </div>
                                 <div className="group">
@@ -74,7 +237,10 @@ export default function CustomerEditProfilePage() {
                                         <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors">
                                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
                                         </div>
-                                        <input defaultValue="+91 98765 43210" className={inputCls} />
+                                        <input
+                                            value={profile.phone}
+                                            onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                                            className={inputCls} />
                                     </div>
                                 </div>
                             </div>
@@ -84,7 +250,11 @@ export default function CustomerEditProfilePage() {
                                     <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors">
                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                                     </div>
-                                    <input defaultValue="admin@salexo.com" className={inputCls} />
+                                    <input
+                                        value={profile.email}
+                                        onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                                        className={inputCls}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -100,6 +270,22 @@ export default function CustomerEditProfilePage() {
                                         </div>
                                         <input
                                             type={showPass[field as keyof typeof showPass] ? "text" : "password"}
+                                            value={
+                                                field === "old"
+                                                    ? passwordData.oldpass
+                                                    : field === "new"
+                                                        ? passwordData.changedpass
+                                                        : passwordData.confirmedpass
+                                            }
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setPasswordData(prev => ({
+                                                    ...prev,
+                                                    ...(field === "old" && { oldpass: value }),
+                                                    ...(field === "new" && { changedpass: value }),
+                                                    ...(field === "confirm" && { confirmedpass: value }),
+                                                }));
+                                            }}
                                             className={inputCls}
                                             placeholder="••••••••"
                                         />
@@ -126,8 +312,10 @@ export default function CustomerEditProfilePage() {
                                 <span>Secured by SSL Encryption</span>
                             </div>
 
-                            <button className="w-full sm:w-auto bg-primary text-white px-12 py-4.5 rounded-2xl font-black text-[12px] uppercase tracking-[0.2em] shadow-lg shadow-primary/10 hover:shadow-accent/20 transition-all duration-300 flex items-center justify-center gap-4 active:scale-95 group">
-                                {tab === "details" ? "Save Identity" : "Update Security"}
+                            <button
+                                onClick={tab === "details" ? handleUpdateProfile : handleChangePassword}
+                                className="w-full cursor-pointer sm:w-auto bg-primary text-white px-12 py-4.5 rounded-2xl font-black text-[12px] uppercase tracking-[0.2em] shadow-lg shadow-primary/10 hover:shadow-accent/20 transition-all duration-300 flex items-center justify-center gap-4 active:scale-95 group">
+                                {isSaving ? "Saving..." : (tab === "details" ? "Save Identity" : "Update Security")}
                                 <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
                             </button>
                         </div>

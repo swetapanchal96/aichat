@@ -11,10 +11,17 @@ import {
     BsBoxArrowRight,
     BsChevronDown
 } from 'react-icons/bs';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { getCustomerAuthHeader } from '@/utils/auth';
+import { apiUrl } from '@/config';
+import { toast } from 'react-toastify';
 
 const CustomerHeader = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+
+    const router = useRouter()
 
     // Dynamic scroll effect for high-end feel
     useEffect(() => {
@@ -28,6 +35,35 @@ const CustomerHeader = () => {
         { name: 'My Chat', href: '/customer/chat', icon: BsChatDots },
     ];
 
+    const handleLogout = async () => {
+    try {
+        const res = await axios.post(
+            `${apiUrl}/reg/userLogout`,
+            {},
+            {
+                headers: getCustomerAuthHeader(),
+            }
+        );
+
+        if (res.data.success) {
+            console.log("Logged out successfully");
+
+            toast.success(res?.data?.message || "Logged out success");
+
+            // Clear customer storage
+            localStorage.removeItem("customerToken");
+            localStorage.removeItem("customerData");
+
+            router.push("/customer/logout");
+        }
+
+    } catch (error:any) {
+        console.error("Logout failed", error);
+
+        toast.error(error?.response.data?.message)
+    }
+};
+
     return (
         <header
             className={`fixed top-0 w-full z-50 transition-all duration-500 ease-in-out ${scrolled
@@ -38,7 +74,7 @@ const CustomerHeader = () => {
             <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
 
                 {/* --- Left: Branding --- */}
-                <Link href="/" className="transition-transform duration-300 hover:scale-105">
+                <Link href="/customer/dashboard" className="transition-transform duration-300 hover:scale-105">
                     <Image
                         src={logo}
                         alt="Salexo"
@@ -67,7 +103,7 @@ const CustomerHeader = () => {
                 <div className="relative">
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className={`flex items-center gap-3 p-1.5 pr-3 rounded-full border transition-all duration-300 ${isMenuOpen ? 'border-accent bg-background shadow-inner' : 'border-gray-100 hover:bg-gray-50 shadow-sm'
+                        className={`flex items-center gap-3 p-1.5 pr-3 cursor-pointer rounded-full border transition-all duration-300 ${isMenuOpen ? 'border-accent bg-background shadow-inner' : 'border-gray-100 hover:bg-gray-50 shadow-sm'
                             }`}
                     >
                         {/* Initial Avatar */}
@@ -105,8 +141,8 @@ const CustomerHeader = () => {
 
                                 <div className="px-3 mt-2">
                                     <button
-                                        onClick={() => console.log("Logout")}
-                                        className="w-full flex items-center px-4 py-3.5 text-[14px] font-bold text-red-500 hover:bg-red-50 rounded-2xl transition-all"
+                                        onClick={handleLogout}
+                                        className="w-full cursor-pointer flex items-center px-4 py-3.5 text-[14px] font-bold text-red-500 hover:bg-red-50 rounded-2xl transition-all"
                                     >
                                         <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center mr-3">
                                             <BsBoxArrowRight size={18} />
