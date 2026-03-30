@@ -7,7 +7,6 @@
   --color-accent: #70a0bf;
 }
 
-
 .salexo-section {
   min-height: 100vh;
   display: flex;
@@ -233,7 +232,6 @@
   z-index: 5;
 }
 
-
 .growth-badge {
   display: inline-flex;
   align-items: center;
@@ -299,7 +297,6 @@
 .float-card {
   animation: floatCard 5s ease-in-out infinite;
 }
-
 
 @media (max-width: 1199px) {
   .salexo-socials {
@@ -370,5 +367,128 @@
     width: 100%;
     justify-content: center;
     padding: 16px 24px;
+  }
+}
+
+.salexo-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 120px 0 80px;
+  background: linear-gradient(160deg, #f0f4ff 0%, #f8fafc 50%, #eef6ff 100%);
+  font-family: "Sora", sans-serif;
+}
+
+.salexo-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.salexo-left-centered {
+  max-width: 760px; 
+  margin: 0 auto;
+  text-align: center;
+}
+
+.salexo-desc {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  border-left: none;
+  padding-left: 0;
+  border-left: 0;
+  max-width: 560px;
+}
+
+.salexo-stats {
+  justify-content: center;
+}
+
+@media (max-width: 991px) {
+  .salexo-section {
+    padding: 100px 0 70px;
+  }
+  .salexo-left-centered {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .salexo-container {
+    padding: 0 18px;
+  }
+  .salexo-title {
+    font-size: clamp(42px, 12vw, 64px);
+    line-height: 0.95;
+  }
+  .salexo-stats {
+    gap: 24px;
+  }
+  .cta-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 16px 24px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes typingBounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+.salexo-chat-messages {
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+.salexo-chat-messages::-webkit-scrollbar {
+  display: none; 
+}
+
+.float-card {
+  animation: floatCard 5s ease-in-out infinite;
+}
+
+@keyframes floatCard {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
   }
 }
