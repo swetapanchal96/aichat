@@ -49,18 +49,17 @@ const AdminLogin = () => {
       if (res.data.token) {
         localStorage.setItem("superadmintoken", res.data.token);
         localStorage.setItem(
-    "superadminuser",
-    JSON.stringify(res.data.data)
-  );
+          "superadminuser",
+          JSON.stringify(res.data.data)
+        );
         toast.success(res?.data?.message || "Login successfully")
         router.push('/superadmin/dashboard')
       }
 
-      // alert(res.data.message);
 
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
-      alert(err.response?.data?.message || "Login failed");
+      toast.error(err.response?.data?.message || "Login failed");
 
     } finally {
       setLoading(false); // ✅ always stop loader

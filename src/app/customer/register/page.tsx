@@ -12,9 +12,9 @@ import {
   IoDiamondOutline,
   IoPersonOutline,
   IoBusinessOutline,
-  IoTimeOutline,
 } from "react-icons/io5";
 import { apiUrl } from "@/config";
+import { toast } from "react-toastify";
 
 const UltimateCustomerRegister = () => {
   const router = useRouter();
@@ -27,7 +27,8 @@ const UltimateCustomerRegister = () => {
     email: "",
     password: "",
     companyName: "",
-    duration: "",
+    phone: "",
+    url: "",
   });
 
 
@@ -46,9 +47,10 @@ const UltimateCustomerRegister = () => {
       !formData.email ||
       !formData.password ||
       !formData.companyName ||
-      !formData.duration
+      !formData.phone ||
+      !formData.url
     ) {
-      alert("Please fill all fields");
+      toast.error("Please fill all fields");
       return;
     }
 
@@ -59,8 +61,9 @@ const UltimateCustomerRegister = () => {
         email: formData.email,
         password: formData.password,
         companyName: formData.companyName,
-        type: selectedPlan, // free or paid
-        duration: formData.duration,
+        type: selectedPlan,
+        phone: formData.phone,
+        url: formData.url,
       };
 
       const response = await axios.post(`${apiUrl}/reg/signup`, payload, {
@@ -71,23 +74,22 @@ const UltimateCustomerRegister = () => {
 
       console.log("Register response:", response.data);
 
-      alert(response?.data?.message || "Signup successful");
+      toast.success(response?.data?.message || "Signup successful");
 
-      // optional: reset form
       setFormData({
         email: "",
         password: "",
         companyName: "",
-        duration: "",
+        phone: "",
+        url: "",
       });
-      setSelectedPlan("free");
 
-      // register success ke baad login page par bhejna ho to
+      setSelectedPlan("free");
       router.push("/customer/login");
     } catch (error: any) {
       console.error("Register error:", error);
 
-      alert(
+      toast.error(
         error?.response?.data?.message ||
         "Registration failed. Please try again."
       );
@@ -130,7 +132,41 @@ const UltimateCustomerRegister = () => {
             </div>
 
             <form className="space-y-4" onSubmit={handleRegister}>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+                <div className="relative group">
+                  <input
+                    type="text"
+                    id="companyName"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    placeholder=" "
+                    className="peer w-full bg-transparent border-b border-gray-700 py-3 text-white outline-none focus:border-accent transition-all placeholder-transparent font-medium"
+                  />
+                  <label
+                    htmlFor="companyName"
+                    className="absolute left-0 -top-3.5 text-gray-500 text-xs transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-accent font-medium uppercase tracking-widest"
+                  >
+                    Company Name
+                  </label>
+                  <IoBusinessOutline className="absolute right-0 top-3 text-gray-600 peer-focus:text-accent transition-colors" />
+                </div>
+                <div className="relative group">
+                  <input
+                    type="text"
+                    id="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder=" "
+                    className="peer w-full bg-transparent border-b border-gray-700 py-3 text-white outline-none focus:border-accent transition-all placeholder-transparent font-medium"
+                  />
+                  <label
+                    htmlFor="phone"
+                    className="absolute left-0 -top-3.5 text-gray-500 text-xs transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-accent font-medium uppercase tracking-widest"
+                  >
+                    Phone Number
+                  </label>
+                </div>
                 <div className="relative group">
                   <input
                     type="email"
@@ -169,51 +205,29 @@ const UltimateCustomerRegister = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-0 top-3 text-gray-600 hover:text-white transition-colors"
                   >
-                    {showPassword ? (
-                      <IoEyeOffOutline size={18} />
-                    ) : (
-                      <IoEyeOutline size={18} />
-                    )}
+                    {showPassword ? <IoEyeOffOutline size={18} /> : <IoEyeOutline size={18} />}
                   </button>
                 </div>
 
-                <div className="relative group">
-                  <input
-                    type="text"
-                    id="companyName"
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    placeholder=" "
-                    className="peer w-full bg-transparent border-b border-gray-700 py-3 text-white outline-none focus:border-accent transition-all placeholder-transparent font-medium"
-                  />
-                  <label
-                    htmlFor="companyName"
-                    className="absolute left-0 -top-3.5 text-gray-500 text-xs transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-accent font-medium uppercase tracking-widest"
-                  >
-                    Company Name
-                  </label>
-                  <IoBusinessOutline className="absolute right-0 top-3 text-gray-600 peer-focus:text-accent transition-colors" />
-                </div>
 
-                <div className="relative group">
-                  <input
-                    type="text"
-                    id="duration"
-                    value={formData.duration}
-                    onChange={handleChange}
-                    placeholder=" "
-                    className="peer w-full bg-transparent border-b border-gray-700 py-3 text-white outline-none focus:border-accent transition-all placeholder-transparent font-medium"
-                  />
-                  <label
-                    htmlFor="duration"
-                    className="absolute left-0 -top-3.5 text-gray-500 text-xs transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-accent font-medium uppercase tracking-widest"
-                  >
-                    Duration
-                  </label>
-                  <IoTimeOutline className="absolute right-0 top-3 text-gray-600 peer-focus:text-accent transition-colors" />
-                </div>
+
               </div>
-
+              <div className="relative group">
+                <input
+                  type="text"
+                  id="url"
+                  value={formData.url}
+                  onChange={handleChange}
+                  placeholder=" "
+                  className="peer w-full bg-transparent border-b border-gray-700 py-3 text-white outline-none focus:border-accent transition-all placeholder-transparent font-medium"
+                />
+                <label
+                  htmlFor="url"
+                  className="absolute left-0 -top-3.5 text-gray-500 text-xs transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-accent font-medium uppercase tracking-widest"
+                >
+                  Website URL
+                </label>
+              </div>
               <div className="space-y-6">
                 <label className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.4em] ml-2">
                   Choose Service Level

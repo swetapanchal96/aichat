@@ -22,9 +22,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         pathname === "/customer/login" ||
         pathname === "/customer/logout" ||
         pathname === "/customer/register" ||
-        pathname === "/customer/otp";
+        pathname === "/customer/forgot-password";
 
-        if (hidelayout) {
+    if (hidelayout) {
         return <main className="min-h-screen bg-background">{children}</main>;
     }
 
