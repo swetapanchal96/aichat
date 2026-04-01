@@ -3,9 +3,12 @@
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import logo from "../assets/logo-1.png";
+import { useRouter } from "next/navigation";
 import { RiArrowDownSLine, RiInstagramLine, RiWhatsappLine, RiMessengerLine, RiMenuLine, RiCloseLine, RiFlashlightLine, RiShieldCheckLine, RiPieChartLine } from "react-icons/ri";
+import Link from 'next/link';
 
 const Header: React.FC = () => {
+    const router = useRouter();
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -103,19 +106,22 @@ const Header: React.FC = () => {
                 </div>
 
                 {/* --- RIGHT ACTIONS --- */}
+             
                 <div className="flex items-center gap-4">
                     {/* --- PREMIUM LOG IN (Underline Morph) --- */}
-                    <a
-                        href="#"
+                    <Link
+                        href="/customer/login"
                         className="hidden md:block relative text-[14px] font-black uppercase tracking-widest text-primary hover:text-secondary transition-colors duration-300 group"
                     >
                         Log In
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full rounded-full"></span>
-                    </a>
+                    </Link>
 
                     {/* --- PREMIUM GET STARTED (High-Gloss Depth) --- */}
-                    <button className="relative group overflow-hidden bg-primary px-5 py-4 rounded-2xl shadow-[0_15px_30px_-10px_rgba(44,68,107,0.3)] hover:shadow-[0_20px_40px_-12px_rgba(46,98,140,0.4)] transition-all duration-500 active:scale-95">
-
+                    <button
+                        onClick={() => router.push("/customer/register")}
+                        className="relative group overflow-hidden bg-primary px-5 py-4 rounded-2xl shadow-[0_15px_30px_-10px_rgba(44,68,107,0.3)] hover:shadow-[0_20px_40px_-12px_rgba(46,98,140,0.4)] transition-all duration-500 active:scale-95"
+                    >
                         {/* Background Shine Effect */}
                         <div className="absolute inset-0 bg-linear-to-r from-secondary via-accent to-secondary opacity-0 group-hover:opacity-100 group-hover:animate-shimmer transition-opacity duration-500"></div>
 
@@ -131,7 +137,12 @@ const Header: React.FC = () => {
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
                             >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={3}
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                                />
                             </svg>
                         </span>
 
@@ -140,7 +151,10 @@ const Header: React.FC = () => {
                     </button>
 
                     {/* Mobile Menu Toggle */}
-                    <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden p-2 text-primary">
+                    <button
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        className="lg:hidden p-2 text-primary"
+                    >
                         {mobileMenuOpen ? <RiCloseLine size={28} /> : <RiMenuLine size={28} />}
                     </button>
                 </div>

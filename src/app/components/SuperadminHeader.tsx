@@ -41,10 +41,12 @@ const SuperAdminHeader = () => {
             // Navigate after success
             router.push("/superadmin/logout");
 
-        } catch (error:any) {
+        } catch (error: any) {
             console.error("Logout failed", error);
 
             // Even if API fails, still logout locally
+
+            localStorage.removeItem("superadmintoken");
             // localStorage.removeItem("superadmintoken");
             toast.error(error?.response?.data?.message || "logout error");
             // router.push("/superadmin/logout");

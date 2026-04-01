@@ -1,10 +1,16 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
-    FiUser, FiLock, FiMail, FiPhone, FiEye, FiEyeOff,
-    FiArrowLeft, FiCheckCircle
+    FiUser,
+    FiLock,
+    FiMail,
+    FiPhone,
+    FiEye,
+    FiEyeOff,
+    FiArrowLeft,
+    FiCheckCircle,
 } from "react-icons/fi";
 import { BsShieldLockFill } from "react-icons/bs";
 import axios from 'axios';
@@ -12,31 +18,39 @@ import { apiUrl } from '@/config';
 import { getAuthHeader } from '@/utils/auth';
 import { toast } from 'react-toastify';
 
-interface ProfileResponse {
+interface UpdateProfileResponse {
     success: boolean;
     message: string;
     data: {
         id: number;
-        created_at: string;
         name: string;
         email: string;
-        password: string;
-        phone: number;
+        phone: number | string;
     };
 }
 
-// Refined UI Constants
-const labelCls = "text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] ml-1";
-const inputCls = "mt-2 w-full rounded-2xl border border-transparent bg-gray-50 px-5 py-3.5 text-[15px] font-semibold text-primary focus:outline-none focus:bg-white focus:ring-4 focus:ring-accent/10 focus:border-accent transition-all duration-300 shadow-inner";
+interface ChangePasswordResponse {
+    success: boolean;
+    message: string;
+}
+
+const labelCls =
+    "text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] ml-1";
+
+const inputCls =
+    "mt-2 w-full rounded-2xl border border-transparent bg-gray-50 px-5 py-3.5 text-[15px] font-semibold text-primary focus:outline-none focus:bg-white focus:ring-4 focus:ring-accent/10 focus:border-accent transition-all duration-300 shadow-inner";
 
 export default function SuperAdminEditProfilePage() {
     const router = useRouter();
+
     const [tab, setTab] = useState<"details" | "password">("details");
     const [isSaving, setIsSaving] = useState(false);
+
     const [profile, setProfile] = useState({
+        id: "",
         fullName: "",
         email: "",
-        phone: ""
+        phone: "",
     });
 
     const [passwordData, setPasswordData] = useState({
@@ -48,33 +62,163 @@ export default function SuperAdminEditProfilePage() {
     // Form States
     const [showPass, setShowPass] = useState({ old: false, new: false, confirm: false });
 
+    const [showPass, setShowPass] = useState({
+        old: false,
+        new: false,
+        confirm: false,
+    });
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const res = await axios.post<ProfileResponse>(
-                    `${apiUrl}/reg/getprofile`,
-                    {},
-                    {
-                        headers: getAuthHeader(),
-                    }
-                );
+        if (typeof window !== "undefined") {
+            const localUser = localStorage.getItem("superadminuser");
 
-                const user = res.data.data;
+            if (localUser) {
+                try {
+                    const parsed = JSON.parse(localUser);
+
+                    setProfile({
+                        id: parsed?.id ? String(parsed.id) : "",
+                        fullName: parsed?.name || "",
+                        email: parsed?.email || "",
+                        phone: parsed?.phone ? String(parsed.phone) : "",
+                    });
+                } catch (error) {
+                    console.error("Failed to parse superadminuser from localStorage", error);
+                }
+            }
+        }
+    }, []);
+
+    const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setProfile((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setPasswords((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleUpdateProfile = async () => {
+        try {
+            setIsSaving(true);
+
+            const payload = {
+                name: profile.fullName,
+                email: profile.email,
+                phone: profile.phone,
+            };
+
+            const res = await axios.post<UpdateProfileResponse>(
+                `${apiUrl}/reg/updateprofile`,
+                payload,
+                {
+                    headers: {
+                        ...getAuthHeader(),
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (res?.data?.success) {
+                const updatedUser = {
+                    id: res.data.data.id,
+                    name: res.data.data.name,
+                    email: res.data.data.email,
+                    phone: String(res.data.data.phone),
+                };
+
+                localStorage.setItem("superadminuser", JSON.stringify(updatedUser));
 
                 setProfile({
-                    fullName: user.name,
-                    email: user.email,
-                    phone: String(user.phone)
+                    id: String(res.data.data.id),
+                    fullName: res.data.data.name || "",
+                    email: res.data.data.email || "",
+                    phone: String(res.data.data.phone || ""),
                 });
 
-            } catch (error) {
-                console.error("Failed to fetch profile", error);
+                toast.success(res?.data?.message || "Profile updated successfully");
+            } else {
+                toast.error(res?.data?.message || "Failed to update profile");
             }
-        };
+        } catch (error: any) {
+            console.error("Update profile error:", error);
+            toast.error(
+                error?.response?.data?.message ||
+                error?.message ||
+                "Failed to update profile"
+            );
+        } finally {
+            setIsSaving(false);
+        }
+    };
+    const handleChangePassword = async () => {
+        try {
+            if (!passwords.oldpass || !passwords.changedpass || !passwords.confirmedpass) {
+                toast.error("Please fill all password fields");
+                return;
+            }
 
-        fetchProfile();
-    }, []);
+            if (passwords.changedpass !== passwords.confirmedpass) {
+                toast.error("New password and confirm password do not match");
+                return;
+            }
+
+            setIsSaving(true);
+
+            const payload = {
+                oldpass: passwords.oldpass,
+                changedpass: passwords.changedpass,
+                confirmedpass: passwords.confirmedpass,
+            };
+
+            const res = await axios.post<ChangePasswordResponse>(
+                `${apiUrl}/reg/changepassword`,
+                payload,
+                {
+                    headers: {
+                        ...getAuthHeader(),
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (res?.data?.success) {
+                toast.success(res?.data?.message || "Password updated successfully");
+
+                setPasswords({
+                    oldpass: "",
+                    changedpass: "",
+                    confirmedpass: "",
+                });
+            } else {
+                toast.error(res?.data?.message || "Failed to update password");
+            }
+        } catch (error: any) {
+            console.error("Change password error:", error);
+            toast.error(
+                error?.response?.data?.message ||
+                error?.message ||
+                "Failed to update password"
+            );
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (tab === "details") {
+            await handleUpdateProfile();
+        } else {
+            await handleChangePassword();
+        }
+    };
 
     const handleUpdateProfile = async () => {
         try {
@@ -160,8 +304,6 @@ export default function SuperAdminEditProfilePage() {
     return (
         <main className="min-h-screen bg-background text-primary animate-in fade-in duration-700">
             <div className="mx-auto w-full max-w-3xl px-6 py-12">
-
-                {/* Back Navigation */}
                 <button
                     onClick={() => router.push("/superadmin/profile")}
                     className="group mb-8 inline-flex items-center gap-2 rounded-xl bg-white border border-gray-100 px-5 py-2.5 text-[13px] font-bold text-gray-500 hover:text-primary hover:shadow-md transition-all active:scale-95"
@@ -172,21 +314,30 @@ export default function SuperAdminEditProfilePage() {
 
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
                     <div>
-                        <h1 className="text-3xl font-semibold tracking-tight">Modify Settings</h1>
-                        <p className="text-gray-400 text-sm mt-1 font-medium text-[15px]">Update your credentials and security protocols.</p>
+                        <h1 className="text-3xl font-semibold tracking-tight">
+                            Modify Settings
+                        </h1>
+                        <p className="text-gray-400 text-sm mt-1 font-medium text-[15px]">
+                            Update your credentials and security protocols.
+                        </p>
                     </div>
-                    {/* Tab Switcher */}
+
                     <div className="inline-flex bg-gray-100/50 p-1.5 rounded-2xl border border-gray-100">
                         <button
                             onClick={() => setTab("details")}
-                            className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[12px] font-black uppercase tracking-wider transition-all ${tab === "details" ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-primary"
+                            className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[12px] font-black uppercase tracking-wider transition-all ${tab === "details"
+                                ? "bg-white text-primary shadow-sm"
+                                : "text-gray-400 hover:text-primary"
                                 }`}
                         >
                             <FiUser /> Profile
                         </button>
+
                         <button
                             onClick={() => setTab("password")}
-                            className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[12px] font-black uppercase tracking-wider transition-all ${tab === "password" ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-primary"
+                            className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[12px] font-black uppercase tracking-wider transition-all ${tab === "password"
+                                ? "bg-white text-primary shadow-sm"
+                                : "text-gray-400 hover:text-primary"
                                 }`}
                         >
                             <FiLock /> Security
@@ -196,7 +347,6 @@ export default function SuperAdminEditProfilePage() {
 
                 <section className="relative overflow-hidden rounded-4xl border border-gray-100 bg-white shadow-[0_30px_70px_-15px_rgba(44,68,107,0.2)]">
                     <div className="p-8 sm:p-12">
-
                         {tab === "details" ? (
                             <div className="space-y-6 animate-in slide-in-from-left-4 duration-500">
                                 <div className="flex items-center gap-3 mb-8">
@@ -218,6 +368,7 @@ export default function SuperAdminEditProfilePage() {
                                             />
                                         </div>
                                     </div>
+
                                     <div className="group">
                                         <label className={labelCls}>Phone Number</label>
                                         <div className="relative">
@@ -229,6 +380,7 @@ export default function SuperAdminEditProfilePage() {
                                         </div>
                                     </div>
                                 </div>
+
                                 <div className="group">
                                     <label className={labelCls}>Email Address</label>
                                     <div className="relative">
@@ -298,6 +450,7 @@ export default function SuperAdminEditProfilePage() {
                                 <FiCheckCircle className="text-green-500" />
                                 All changes are encrypted
                             </div>
+
                             <button
                                 onClick={tab === "details" ? handleUpdateProfile : handleChangePassword}
                                 disabled={isSaving}

@@ -168,7 +168,7 @@ const UltimateCustomerLogin = () => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
-      alert("Please enter email and password");
+      toast.error("Please enter email and password");
       return;
     }
 
@@ -351,17 +351,31 @@ const UltimateCustomerLogin = () => {
               </button>
             </form>
 
-            <div className="mt-5 pt-4 border-t border-white/5 flex flex-col items-center gap-4">
+            <div className="mt-5 pt-4 border-t border-white/5 flex flex-col items-center gap-6">
+              {/* Forgot Password Option */}
               <p className="text-gray-500 text-[11px] uppercase tracking-widest">
                 New to the chatbot?
               </p>
-              <Link
-                href="/customer/register"
-                className="group cursor-pointer relative text-white text-xs font-bold uppercase tracking-[0.2em] transition-all overflow-hidden"
-              >
-                <span className="block pb-1">Request Access / Sign Up</span>
-                <div className="absolute bottom-0 left-0 w-full h-px bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
-              </Link>
+              <div className="flex flex-col items-center gap-1">
+                <Link
+                  href="/customer/forgot-password"
+                  className="group cursor-pointer relative text-accent text-[10px] font-bold uppercase tracking-[0.2em] transition-all overflow-hidden"
+                >
+                  <span className="block pb-1">Lost Keys? / Reset Access</span>
+                  <div className="absolute bottom-0 left-0 w-full h-[1.5px] bg-white -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-500"></div>
+                </Link>
+              </div>
+
+              {/* Registration Section */}
+              <div className="flex flex-col items-center gap-3">
+                <Link
+                  href="/customer/register"
+                  className="group cursor-pointer relative text-white text-xs font-bold uppercase tracking-[0.2em] transition-all overflow-hidden"
+                >
+                  <span className="block pb-1">Request Access / Sign Up</span>
+                  <div className="absolute bottom-0 left-0 w-full h-px bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+                </Link>
+              </div>
             </div>
 
             <div className="mt-4 text-center">

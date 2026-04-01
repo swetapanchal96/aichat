@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ChatWidget from "./components/ChatWidget";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -12,8 +13,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <>
       {!hideLayout && <Header />}
       {children}
+      {!hideLayout && <ChatWidget />}
       {!hideLayout && <Footer />}
     </>
   );
 }
- 

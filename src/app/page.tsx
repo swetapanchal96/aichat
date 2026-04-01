@@ -1,15 +1,21 @@
+
+import AutomationSection from "./components/AutomationSection";
+import BenefitsSection from "./components/BenefitsSection";
 import FAQSection from "./components/FAQSection";
 import Hero from "./components/Hero";
-import ManyStyleFeatures from "./components/ManyStyleFeatures";
-import PricingSection from "./components/PricingSection";
+import PlatformsSection from "./components/PlatformsSection";
+import TestimonialsSection from "./components/TestimonialsSection";
 
 export default function Home() {
   return (
     <>
       <Hero />
-      <ManyStyleFeatures />
-      <PricingSection />
-      <FAQSection />
+      {/* <BenefitsSection />
+      <PlatformsSection />
+      <TestimonialsSection />
+      <AutomationSection />
+      <FAQSection /> */}
+  
     </>
   );
 }

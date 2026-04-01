@@ -33,10 +33,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }
     }, [pathname])
 
-    // 🚫 BLOCK UI until auth is verified
-    if (!isAuthChecked && !hidelayout) {
-        return null; // or loader
-    }
+    const hidelayout =
+        pathname === "/customer/login" ||
+        pathname === "/customer/logout" ||
+        pathname === "/customer/register" ||
+        pathname === "/customer/forgot-password";
 
     if (hidelayout) {
         return <main className="min-h-screen bg-background">{children}</main>;
