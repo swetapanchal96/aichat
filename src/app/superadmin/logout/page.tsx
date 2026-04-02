@@ -1,8 +1,8 @@
 "use client"
 
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
-import { IoPowerOutline, IoArrowBackOutline, IoShieldCheckmarkOutline, IoFingerPrintOutline } from "react-icons/io5";
+import  { useEffect, useState } from 'react';
+import { IoPowerOutline, IoArrowBackOutline, IoFingerPrintOutline } from "react-icons/io5";
 
 const AdminLogoutLight = () => {
   const [progress, setProgress] = useState(0);

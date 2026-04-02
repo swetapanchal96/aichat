@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import SuperAdminHeader from "../components/SuperadminHeader";
 import { usePathname, useRouter } from "next/navigation";
+import AdminFooter from "../components/AdminFooter";
 
 export default function SuperAdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -45,7 +46,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
             </main>
 
             {/* You can uncomment the footer later if needed */}
-            {/* <AdminFooter /> */}
+            <AdminFooter />
         </div>
     );
 }
