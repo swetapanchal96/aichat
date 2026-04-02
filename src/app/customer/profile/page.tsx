@@ -3,88 +3,87 @@
 import  { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
-import {
-    FiEdit3,
-    FiMail,
-    FiPhone,
-    FiShield,
-    FiCalendar,
-    FiGlobe,
-    FiArrowRight,
-} from "react-icons/fi";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { FiEdit3, FiMail, FiPhone, FiShield, FiCalendar, FiGlobe, FiArrowRight } from "react-icons/fi";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
-import { apiUrl } from "@/config";
+import { toast } from "react-toastify";
 
-
-
-type ProfileData = {
-    email: string;
-    companyname: string;
-    phone: string | number;
-};
+interface CustomerProfileResponse {
+    success: boolean;
+    message: string;
+    data: {
+        id: string;
+        email: string;
+        trial_start: string;
+        trial_end: string;
+        is_paid: boolean;
+        created_at: string;
+        company_id: string;
+        companyname: string;
+        isactive: boolean;
+        script: string;
+        phone: number | string;
+    };
+}
 
 export default function CustomerProfilePage() {
-    const [profile, setProfile] = useState<ProfileData>({
+    const [profile, setProfile] = useState({
+        fullName: "",
         email: "",
-        companyname: "",
         phone: "",
+        initials: "",
+        role: "",
+        joined: "",
+        companyName: "",
     });
 
-    const [loading, setLoading] = useState(true);
-
-    const getInitials = (name: string) => {
-        if (!name) return "NA";
-        return name
-            .split(" ")
-            .filter(Boolean)
-            .map((word) => word[0])
-            .join("")
-            .slice(0, 2)
-            .toUpperCase();
-    };
-
+    useEffect(() => {
     const fetchProfile = async () => {
         try {
-            setLoading(true);
-
-            const token = localStorage.getItem("customerToken");
-
-            const res = await axios.post(
+            const res = await axios.post<CustomerProfileResponse>(
                 `${apiUrl}/reg/getuserprofile`,
                 {},
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: getCustomerAuthHeader(),
                 }
             );
 
-            if (res?.data?.success) {
-                setProfile({
-                    email: res?.data?.data?.email || "",
-                    companyname: res?.data?.data?.companyname || "",
-                    phone: res?.data?.data?.phone || "",
-                });
-            }
-        } catch (error: any) {
-            console.error(
-                "Profile fetch error:",
-                error?.response?.data || error?.message
-            );
-        } finally {
-            setLoading(false);
+            const data = res.data.data;
+
+            setProfile({
+                fullName: data.companyname || "N/A",
+                email: data.email,
+                phone: data.phone ? String(data.phone) : "N/A",
+                initials: data.companyname
+                    ?.split(" ")
+                    .map((w) => w[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase(),
+                role: data.is_paid ? "Paid User" : "Trial User",
+                joined: new Date(data.created_at).toLocaleDateString("en-IN", {
+                    month: "long",
+                    year: "numeric",
+                }),
+                companyName: data.companyname,
+            });
+
+        } catch (error:any) {
+            // console.error("Failed to fetch profile", error);
+            toast.error(error?.response?.data?.message);
         }
     };
 
-    useEffect(() => {
-        fetchProfile();
-    }, []);
+    fetchProfile();
+}, []);
 
     return (
         <main className="min-h-screen bg-slate-50 py-12 px-6 lg:px-8 font-sans selection:bg-primary/20">
             <div className="mx-auto max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-out">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b border-slate-200 pb-8">
                     <div className="space-y-1">
+
                         <h1 className="text-4xl font-bold tracking-tight text-primary md:text-5xl">
                             Account <span className="text-accent font-light">Settings</span>
                         </h1>

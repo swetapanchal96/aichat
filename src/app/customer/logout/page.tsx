@@ -3,7 +3,11 @@
 import Link from 'next/link';
 import { IoArrowForwardOutline, IoFingerPrintOutline, IoShieldCheckmarkSharp, IoPlanetOutline, IoRemoveOutline } from "react-icons/io5";
 
+
+
 const VoidFragmentLogout = () => {
+
+  const router = useRouter();
   return (
     <div className="h-screen w-full flex items-center justify-center bg-[#030508] py-20 px-6 font-sans relative overflow-hidden">
       
@@ -75,7 +79,7 @@ const VoidFragmentLogout = () => {
                   <IoArrowForwardOutline className="text-lg group-hover:translate-x-1 transition-transform" />
                 </Link>
                 
-                <button className="w-full py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] text-gray-600 border border-white/5 hover:text-white hover:bg-white/5 transition-all">
+                <button onClick={() => router.push('/')}  className="w-full cursor-pointer py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] text-gray-600 border border-white/5 hover:text-white hover:bg-white/5 transition-all">
                   Exit Portal
                 </button>
               </div>

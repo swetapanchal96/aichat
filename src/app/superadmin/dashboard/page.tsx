@@ -13,57 +13,73 @@ import {
 import { apiUrl } from "@/config";
 import { getAuthHeader } from "@/utils/auth";
 
-interface DashboardStats {
-    today_tokens: number;
-    month_tokens: number;
-    highest_token_user: number;
-}
-
-interface TopUser {
-    companyname: string;
-    total_tokens: number;
+interface DashboardResponse {
+    success: boolean;
+    message: string;
+    data: {
+        today_tokens: number;
+        month_tokens: number;
+        highest_token_user: number;
+    };
+    user: {
+        companyname: string;
+        total_tokens: number;
+    }[];
 }
 
 const Dashboard = () => {
-    const [stats, setStats] = useState<DashboardStats>({
-        today_tokens: 0,
-        month_tokens: 0,
-        highest_token_user: 0,
+
+    const [stats, setStats] = useState({
+        today: 0,
+        month: 0,
+        highest: 0,
     });
 
-    const [topUsers, setTopUsers] = useState<TopUser[]>([]);
+    const [topUsers, setTopUsers] = useState<
+        { id: number; name: string; tokens: number }[]
+    >([]);
+
     const [loading, setLoading] = useState(true);
 
-    const fetchDashboardStats = async () => {
-        try {
-            setLoading(true);
-            const res = await axios.post(
-                `${apiUrl}/getsuperadminstats`,
-                {},
-                {
-                    headers: getAuthHeader(),
-                }
-            );
+    // ✅ API CALL
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await axios.get<DashboardResponse>(
+                    `${apiUrl}/getsuperadminstats`,
+                    {
+                        headers: getAuthHeader(),
+                    }
+                );
 
+                const response = res.data;
 
-            if (res.data?.success) {
+                // ✅ Set stats
                 setStats({
-                    today_tokens: res.data.data?.today_tokens || 0,
-                    month_tokens: res.data.data?.month_tokens || 0,
-                    highest_token_user: res.data.data?.highest_token_user || 0,
+                    today: response.data.today_tokens,
+                    month: response.data.month_tokens,
+                    highest: response.data.highest_token_user,
                 });
 
-                setTopUsers(res.data.user || []);
-            }
-        } catch (error) {
-            console.error("Dashboard API Error:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+                // ✅ Handle MULTIPLE users (sorted + mapped)
+                const mappedUsers = response.user
+                    .sort((a, b) => b.total_tokens - a.total_tokens)
+                    .map((u, index) => ({
+                        id: index,
+                        name: u.companyname,
+                        tokens: u.total_tokens,
+                    }));
 
-    useEffect(() => {
-        fetchDashboardStats();
+                setTopUsers(mappedUsers);
+
+            } catch (error) {
+                console.error("Failed to fetch dashboard stats", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
     }, []);
 
     return (
@@ -93,27 +109,9 @@ const Dashboard = () => {
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                     {[
-                        {
-                            label: "Today's Token",
-                            val: stats.today_tokens,
-                            icon: BsTicketPerforated,
-                            trend: "Today",
-                            color: "bg-primary",
-                        },
-                        {
-                            label: "Monthly Token",
-                            val: stats.month_tokens,
-                            icon: BsCalendar3,
-                            trend: "Month",
-                            color: "bg-secondary",
-                        },
-                        {
-                            label: "Top Holder",
-                            val: stats.highest_token_user,
-                            icon: BsTrophy,
-                            trend: "Highest",
-                            color: "bg-accent",
-                        },
+                        { label: "Today's Token", val: stats.today, icon: BsTicketPerforated, trend: "+12%", color: "bg-primary" },
+                        { label: "Monthly", val: stats.month, icon: BsCalendar3, trend: "Stable", color: "bg-secondary" },
+                        { label: "Top Holder", val: stats.highest, icon: BsTrophy, trend: "R. Sharma", color: "bg-accent" }
                     ].map((card, idx) => (
                         <div
                             key={idx}
@@ -171,7 +169,41 @@ const Dashboard = () => {
                                         : "bg-background text-secondary group-hover:bg-primary group-hover:text-white"
                                         }`}
                                 >
-                                    {index + 1}
+                                    {/* Hidden Background Slide Fill */}
+                                    <div className="absolute inset-0 bg-primary translate-x-[-101%] group-hover:translate-x-0 transition-transform duration-500 ease-out z-0 opacity-[0.02]" />
+
+                                    <div className="flex items-center space-x-4 relative z-10">
+                                        {/* Visual Rank Indicator */}
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm transition-colors duration-300 ${index === 0 ? 'bg-primary text-white' : 'bg-background text-secondary group-hover:bg-primary group-hover:text-white'
+                                            }`}>
+                                            {index + 1}
+                                        </div>
+
+                                        <div className="flex flex-col">
+                                            <span className="text-[15px] font-bold text-primary group-hover:text-secondary transition-colors">
+                                                {user.name}
+                                            </span>
+                                            <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
+                                                Platform Contributor
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center space-x-6 relative z-10">
+                                        <div className="text-right">
+                                            <span className="block text-lg font-black text-primary tabular-nums tracking-tighter">
+                                                {user.tokens.toLocaleString()}
+                                            </span>
+                                            <span className="text-[10px] font-bold text-accent uppercase">
+                                                Tokens
+                                            </span>
+                                        </div>
+
+                                        {/* Hover Reveal Arrow */}
+                                        {/* <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-gray-300 group-hover:bg-primary group-hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0">
+                                            <BsArrowRightShort size={24} />
+                                        </div> */}
+                                    </div>
                                 </div>
 
                                 <div className="flex flex-col">
