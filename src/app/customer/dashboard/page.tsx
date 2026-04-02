@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import {
     BsChatLeftDots,
@@ -10,7 +10,6 @@ import {
     BsLightningCharge,
 } from "react-icons/bs";
 import { apiUrl } from "@/config";
-import { getAuthHeader } from "@/utils/auth";
 
 type UserTokenStats = {
     company_id: string;

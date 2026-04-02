@@ -1,8 +1,7 @@
-
 "use client";
 
-import { apiUrl } from "@/config";
-import { getCustomerAuthHeader } from "@/utils/auth";
+import  { useEffect, useState } from "react";
+import Link from "next/link";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -148,8 +147,6 @@ export default function CustomerProfilePage() {
                     </section>
 
                     <section className="md:col-span-7 lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in fade-in slide-in-from-right-8 duration-700 delay-300 fill-mode-both">
-
-                        {/* Legal Name Card */}
                         <div className="sm:col-span-2 group rounded-4xl bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
@@ -169,7 +166,6 @@ export default function CustomerProfilePage() {
                             </div>
                         </div>
 
-                        {/* Email Card */}
                         <div className="group rounded-4xl bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
                             <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-secondary mb-6 group-hover:scale-110 transition-transform shadow-inner">
                                 <FiMail size={22} />
@@ -183,7 +179,6 @@ export default function CustomerProfilePage() {
                             </p>
                         </div>
 
-                        {/* Phone Card */}
                         <div className="group rounded-4xl bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
                             <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-secondary mb-6 group-hover:scale-110 transition-transform shadow-inner">
                                 <FiPhone size={22} />

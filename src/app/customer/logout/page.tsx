@@ -1,8 +1,6 @@
 "use client"
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import React from 'react';
 import { IoArrowForwardOutline, IoFingerPrintOutline, IoShieldCheckmarkSharp, IoPlanetOutline, IoRemoveOutline } from "react-icons/io5";
 
 
