@@ -23,16 +23,18 @@ type UserTokenStats = {
 const DashboardStats = () => {
     const [statsData, setStatsData] = useState<UserTokenStats | null>(null);
     const [loading, setLoading] = useState(true);
+    const getToken = () => {
+        if (typeof window === "undefined") return null;
+        return localStorage.getItem("customerToken");
+    };
+    const token = getToken();
 
     const formatNumber = (num: number | string | undefined) => {
         if (num === undefined || num === null) return "0";
         return Number(num).toLocaleString("en-IN");
     };
 
-    const getToken = () => {
-        return localStorage.getItem("customerToken") || "";
-    };
-    const token = getToken();
+
     const fetchUserStats = async () => {
         try {
             setLoading(true);

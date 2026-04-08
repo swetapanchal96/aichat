@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -33,25 +32,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }
     }, [pathname])
 
-    const hidelayout =
-        pathname === "/customer/login" ||
-        pathname === "/customer/logout" ||
-        pathname === "/customer/register" ||
-        pathname === "/customer/forgot-password";
+    const normalizedPath =
+        pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
 
-    if (hidelayout) {
+    const hideLayout =
+        normalizedPath === "/customer/login" ||
+        normalizedPath === "/customer/logout" ||
+        normalizedPath === "/customer/register" ||
+        normalizedPath === "/customer/forgot-password";
+
+    if (hideLayout) {
         return <main className="min-h-screen bg-background">{children}</main>;
     }
 
     return (
         <>
-            {/* <RoleGuard roleRequired="admin"> */}
             <CustomerHeader />
             <main className="pt-20 animate-in fade-in duration-700">
                 {children}
             </main>
             <AdminFooter />
-            {/* </RoleGuard> */}
         </>
     );
 }

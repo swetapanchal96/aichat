@@ -9,7 +9,10 @@ import {
     BsGrid1X2,
     BsPerson,
     BsBoxArrowRight,
-    BsChevronDown
+    BsChevronDown,
+    BsFileText,
+    BsCollection,
+    BsCpu
 } from 'react-icons/bs';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
@@ -47,6 +50,9 @@ const CustomerHeader = () => {
     const navItems = [
         { name: 'Dashboard', href: '/customer/dashboard', icon: BsGrid1X2 },
         { name: 'My Chat', href: '/customer/chat', icon: BsChatDots },
+        { name: 'View Script', href: '/customer/view-script', icon: BsFileText },
+        { name: 'Resources', href: '/customer/resources', icon: BsCollection },
+        { name: 'Test My Model', href: '/customer/test-my-model', icon: BsCpu },
     ];
 
     const handleLogout = async () => {
@@ -81,8 +87,8 @@ const CustomerHeader = () => {
     return (
         <header
             className={`fixed top-0 w-full z-50 transition-all duration-500 ease-in-out ${scrolled
-                ? "bg-white/80 backdrop-blur-xl h-16 shadow-[0_20px_40px_-15px_rgba(44,68,107,0.15)] border-b border-gray-100"
-                : "bg-white h-20 border-b border-transparent"
+                    ? "bg-white/80 backdrop-blur-xl h-16 shadow-[0_20px_40px_-15px_rgba(44,68,107,0.15)] border-b border-gray-100"
+                    : "bg-white h-20 border-b border-transparent"
                 }`}
         >
             <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
@@ -122,7 +128,8 @@ const CustomerHeader = () => {
                             {companyName?.charAt(0)?.toUpperCase() || "J"}
                         </div>
                         <BsChevronDown
-                            className={`text-gray-400 transition-transform duration-500 ${isMenuOpen ? 'rotate-180' : ''}`}
+                            className={`text-gray-400 transition-transform duration-500 ${isMenuOpen ? 'rotate-180' : ''
+                                }`}
                             size={10}
                         />
                     </button>
@@ -131,7 +138,6 @@ const CustomerHeader = () => {
                         <>
                             <div className="fixed inset-0 z-10" onClick={() => setIsMenuOpen(false)}></div>
                             <div className="absolute right-0 mt-4 w-64 bg-white/95 backdrop-blur-2xl rounded-[28px] shadow-[0_30px_70px_-10px_rgba(44,68,107,0.25)] border border-gray-100 py-3 z-20 overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-300">
-
                                 <div className="px-6 py-4 mb-2 border-b border-gray-50 bg-gray-50/30">
                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
                                         Customer Account
