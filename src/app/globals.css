@@ -492,3 +492,9 @@
     transform: translateY(-15px);
   }
 }
+
+.salexo-glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(112, 160, 191, 0.1);
+}

@@ -158,7 +158,7 @@ const ForgotPassword = () => {
                         <div className="space-y-2">
                             <div className="flex justify-between items-center px-2">
                                 <label className="text-[10px] font-black tracking-[0.3em] text-accent uppercase">
-                                    Verified Node
+                                    Verified Email id
                                 </label>
                                 <CircleDot size={12} className="text-accent animate-pulse" />
                             </div>
@@ -192,7 +192,7 @@ const ForgotPassword = () => {
                             className="flex items-center gap-2 text-[10px] font-black text-accent hover:text-white transition-all uppercase tracking-[0.25em] group"
                         >
                             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-                            Back to Auth Terminal
+                            Back to login
                         </Link>
 
                         <div className="flex items-center gap-3">
