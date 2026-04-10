@@ -14,8 +14,10 @@ import {
     BsCollection,
     BsCpu
 } from 'react-icons/bs';
-import { apiUrl } from '@/config';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { getCustomerAuthHeader } from '@/utils/auth';
+import { apiUrl } from '@/config';
 import { toast } from 'react-toastify';
 
 const CustomerHeader = () => {
@@ -23,6 +25,9 @@ const CustomerHeader = () => {
     const [scrolled, setScrolled] = useState(false);
     const [companyName, setCompanyName] = useState("John Doe");
 
+    const router = useRouter()
+
+    // Dynamic scroll effect for high-end feel
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
         window.addEventListener("scroll", handleScroll);
@@ -51,41 +56,33 @@ const CustomerHeader = () => {
     ];
 
     const handleLogout = async () => {
-        try {
-            const token = localStorage.getItem("customerToken");
-
-            const res = await axios.post(
-                `${apiUrl}/reg/userLogout`,
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            if (res?.data?.success) {
-                toast.success(res?.data?.message || "Logged out successfully");
-
-                localStorage.removeItem("customerToken");
-                localStorage.removeItem("customerData");
-
-                window.location.href = "/customer/logout";
-            } else {
-                toast.error(res?.data?.message || "Logout failed");
+    try {
+        const res = await axios.post(
+            `${apiUrl}/reg/userLogout`,
+            {},
+            {
+                headers: getCustomerAuthHeader(),
             }
-        } catch (error: any) {
-            console.error("Logout Error:", error);
+        );
 
-            const errorMessage =
-                error?.response?.data?.message ||
-                error?.response?.data?.error ||
-                error?.message ||
-                "Something went wrong";
+        if (res.data.success) {
+            console.log("Logged out successfully");
 
-            toast.error(errorMessage);
+            toast.success(res?.data?.message || "Logged out success");
+
+            // Clear customer storage
+            localStorage.removeItem("customerToken");
+            localStorage.removeItem("customerData");
+
+            router.push("/customer/logout");
         }
-    };
+
+    } catch (error:any) {
+        console.error("Logout failed", error);
+
+        toast.error(error?.response.data?.message)
+    }
+};
 
     return (
         <header
@@ -95,7 +92,9 @@ const CustomerHeader = () => {
                 }`}
         >
             <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
-                <Link href="/" className="transition-transform duration-300 hover:scale-105">
+
+                {/* --- Left: Branding --- */}
+                <Link href="/customer/dashboard" className="transition-transform duration-300 hover:scale-105">
                     <Image
                         src={logo}
                         alt="Salexo"
@@ -122,9 +121,7 @@ const CustomerHeader = () => {
                 <div className="relative">
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className={`flex items-center gap-3 p-1.5 pr-3 rounded-full border transition-all duration-300 ${isMenuOpen
-                                ? 'border-accent bg-background shadow-inner'
-                                : 'border-gray-100 hover:bg-gray-50 shadow-sm'
+                        className={`flex items-center gap-3 p-1.5 pr-3 cursor-pointer rounded-full border transition-all duration-300 ${isMenuOpen ? 'border-accent bg-background shadow-inner' : 'border-gray-100 hover:bg-gray-50 shadow-sm'
                             }`}
                     >
                         <div className="w-8 h-8 rounded-full bg-linear-to-tr from-primary to-secondary flex items-center justify-center text-[12px] font-bold text-white shadow-md">
@@ -164,7 +161,7 @@ const CustomerHeader = () => {
                                 <div className="px-3 mt-2">
                                     <button
                                         onClick={handleLogout}
-                                        className="w-full flex items-center px-4 py-3.5 text-[14px] font-bold text-red-500 hover:bg-red-50 rounded-2xl transition-all"
+                                        className="w-full cursor-pointer flex items-center px-4 py-3.5 text-[14px] font-bold text-red-500 hover:bg-red-50 rounded-2xl transition-all"
                                     >
                                         <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center mr-3">
                                             <BsBoxArrowRight size={18} />

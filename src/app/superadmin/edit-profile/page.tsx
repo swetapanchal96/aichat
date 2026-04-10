@@ -13,10 +13,10 @@ import {
     FiCheckCircle,
 } from "react-icons/fi";
 import { BsShieldLockFill } from "react-icons/bs";
-import axios from "axios";
-import { apiUrl } from "@/config";
-import { getAuthHeader } from "@/utils/auth";
-import { toast } from "react-toastify";
+import axios from 'axios';
+import { apiUrl } from '@/config';
+import { getAuthHeader } from '@/utils/auth';
+import { toast } from 'react-toastify';
 
 interface UpdateProfileResponse {
     success: boolean;
@@ -53,11 +53,14 @@ export default function SuperAdminEditProfilePage() {
         phone: "",
     });
 
-    const [passwords, setPasswords] = useState({
+    const [passwordData, setPasswordData] = useState({
         oldpass: "",
         changedpass: "",
-        confirmedpass: "",
+        confirmedpass: ""
     });
+
+    // Form States
+    const [showPass, setShowPass] = useState({ old: false, new: false, confirm: false });
 
     const [showPass, setShowPass] = useState({
         old: false,
@@ -217,6 +220,87 @@ export default function SuperAdminEditProfilePage() {
         }
     };
 
+    const handleUpdateProfile = async () => {
+        try {
+
+
+            const payload = {
+                name: profile.fullName,
+                email: profile.email,
+                phone: profile.phone,
+            };
+
+            const res = await axios.post(
+                `${apiUrl}/reg/editprofile`,
+                payload,
+                {
+                    headers: getAuthHeader(),
+                }
+            );
+
+            if (res.data.success) {
+                console.log("Profile updated:", res.data);
+
+                toast.success(res?.data?.message || "Profile updated:")
+
+                // Optional: update localStorage
+                localStorage.setItem(
+                    "superadminuser",
+                    JSON.stringify(res.data.data)
+                );
+            }
+
+        } catch (error) {
+            console.error("Update failed", error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleChangePassword = async () => {
+    try {
+        setIsSaving(true);
+
+        // Basic validation
+        if (passwordData.changedpass !== passwordData.confirmedpass) {
+            console.error("Passwords do not match");
+            return;
+        }
+
+        const payload = {
+            oldpass: passwordData.oldpass,
+            changedpass: passwordData.changedpass,
+            confirmedpass: passwordData.confirmedpass,
+        };
+
+        const res = await axios.post(
+            `${apiUrl}/reg/changepassword`,
+            payload,
+            {
+                headers: getAuthHeader(),
+            }
+        );
+
+        if (res.data.success) {
+            console.log("Password updated successfully");
+
+            // Optional: clear fields
+            setPasswordData({
+                oldpass: "",
+                changedpass: "",
+                confirmedpass: ""
+            });
+
+            toast.success(res?.data?.message || "password changed")
+        }
+
+    } catch (error) {
+        console.error("Password update failed", error);
+    } finally {
+        setIsSaving(false);
+    }
+};
+
     return (
         <main className="min-h-screen bg-background text-primary animate-in fade-in duration-700">
             <div className="mx-auto w-full max-w-3xl px-6 py-12">
@@ -278,11 +362,9 @@ export default function SuperAdminEditProfilePage() {
                                         <div className="relative">
                                             <FiUser className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors" />
                                             <input
-                                                name="fullName"
                                                 value={profile.fullName}
-                                                onChange={handleProfileChange}
+                                                onChange={(e) => setProfile({ ...profile, fullName: e.target.value })}
                                                 className={`${inputCls} pl-12`}
-                                                placeholder="Enter full name"
                                             />
                                         </div>
                                     </div>
@@ -292,12 +374,9 @@ export default function SuperAdminEditProfilePage() {
                                         <div className="relative">
                                             <FiPhone className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors" />
                                             <input
-                                                name="phone"
                                                 value={profile.phone}
-                                                onChange={handleProfileChange}
-                                                className={`${inputCls} pl-12`}
-                                                placeholder="Enter phone number"
-                                            />
+                                                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                                                className={`${inputCls} pl-12`} />
                                         </div>
                                     </div>
                                 </div>
@@ -307,11 +386,9 @@ export default function SuperAdminEditProfilePage() {
                                     <div className="relative">
                                         <FiMail className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors" />
                                         <input
-                                            name="email"
                                             value={profile.email}
-                                            onChange={handleProfileChange}
+                                            onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                                             className={`${inputCls} pl-12`}
-                                            placeholder="Enter email"
                                         />
                                     </div>
                                 </div>
@@ -326,84 +403,44 @@ export default function SuperAdminEditProfilePage() {
                                 </div>
 
                                 <div className="space-y-5">
-                                    <div>
-                                        <label className={labelCls}>Current Password</label>
-                                        <div className="relative">
-                                            <FiLock className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" />
-                                            <input
-                                                name="oldpass"
-                                                type={showPass.old ? "text" : "password"}
-                                                value={passwords.oldpass}
-                                                onChange={handlePasswordChange}
-                                                className={`${inputCls} pl-12 pr-12`}
-                                                placeholder="••••••••"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setShowPass((prev) => ({ ...prev, old: !prev.old }))
-                                                }
-                                                className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
-                                            >
-                                                {showPass.old ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className={labelCls}>New Password</label>
-                                        <div className="relative">
-                                            <FiLock className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" />
-                                            <input
-                                                name="changedpass"
-                                                type={showPass.new ? "text" : "password"}
-                                                value={passwords.changedpass}
-                                                onChange={handlePasswordChange}
-                                                className={`${inputCls} pl-12 pr-12`}
-                                                placeholder="••••••••"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setShowPass((prev) => ({ ...prev, new: !prev.new }))
-                                                }
-                                                className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
-                                            >
-                                                {showPass.new ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className={labelCls}>Confirm New Password</label>
-                                        <div className="relative">
-                                            <FiLock className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" />
-                                            <input
-                                                name="confirmedpass"
-                                                type={showPass.confirm ? "text" : "password"}
-                                                value={passwords.confirmedpass}
-                                                onChange={handlePasswordChange}
-                                                className={`${inputCls} pl-12 pr-12`}
-                                                placeholder="••••••••"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setShowPass((prev) => ({
-                                                        ...prev,
-                                                        confirm: !prev.confirm,
-                                                    }))
-                                                }
-                                                className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
-                                            >
-                                                {showPass.confirm ? (
-                                                    <FiEyeOff size={18} />
-                                                ) : (
-                                                    <FiEye size={18} />
-                                                )}
-                                            </button>
-                                        </div>
-                                    </div>
+                                    {["Current Password", "New Password", "Confirm New Password"].map((lbl, idx) => {
+                                        const field = idx === 0 ? 'old' : idx === 1 ? 'new' : 'confirm';
+                                        return (
+                                            <div key={lbl}>
+                                                <label className={labelCls}>{lbl}</label>
+                                                <div className="relative">
+                                                    <FiLock className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" />
+                                                    <input
+                                                        type={showPass[field as keyof typeof showPass] ? "text" : "password"}
+                                                        value={
+                                                            field === "old"
+                                                                ? passwordData.oldpass
+                                                                : field === "new"
+                                                                    ? passwordData.changedpass
+                                                                    : passwordData.confirmedpass
+                                                        }
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setPasswordData(prev => ({
+                                                                ...prev,
+                                                                ...(field === "old" && { oldpass: value }),
+                                                                ...(field === "new" && { changedpass: value }),
+                                                                ...(field === "confirm" && { confirmedpass: value }),
+                                                            }));
+                                                        }}
+                                                        className={`${inputCls} pl-12 pr-12`}
+                                                        placeholder="••••••••"
+                                                    />
+                                                    <button
+                                                        onClick={() => setShowPass(prev => ({ ...prev, [field]: !prev[field as keyof typeof showPass] }))}
+                                                        className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
+                                                    >
+                                                        {showPass[field as keyof typeof showPass] ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
@@ -415,16 +452,11 @@ export default function SuperAdminEditProfilePage() {
                             </div>
 
                             <button
-                                type="button"
-                                onClick={handleSubmit}
+                                onClick={tab === "details" ? handleUpdateProfile : handleChangePassword}
                                 disabled={isSaving}
-                                className="group relative bg-primary text-white px-10 py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-95 flex items-center gap-3 disabled:opacity-60"
+                                className="group cursor-pointer relative bg-primary text-white px-10 py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-95 flex items-center gap-3"
                             >
-                                {isSaving
-                                    ? "Please wait..."
-                                    : tab === "details"
-                                        ? "Update Identity"
-                                        : "Reset Security"}
+                                {isSaving ? "Updating..." : (tab === "details" ? "Update Identity" : "Reset Security")}
                                 <FiArrowLeft className="rotate-180 group-hover:translate-x-1 transition-transform" />
                             </button>
                         </div>

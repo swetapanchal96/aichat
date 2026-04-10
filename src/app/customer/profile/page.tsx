@@ -3,15 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
-import {
-    FiEdit3,
-    FiMail,
-    FiPhone,
-    FiShield,
-    FiCalendar,
-    FiGlobe,
-    FiArrowRight,
-} from "react-icons/fi";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { FiEdit3, FiMail, FiPhone, FiShield, FiCalendar, FiGlobe, FiArrowRight } from "react-icons/fi";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import { apiUrl } from "@/config";
 
@@ -25,39 +19,21 @@ type ProfileData = {
 };
 
 export default function CustomerProfilePage() {
-    const [profile, setProfile] = useState<ProfileData>({
+    const [profile, setProfile] = useState({
+        fullName: "",
         email: "",
-        companyname: "",
         phone: "",
         url: "",
     });
 
-    const [loading, setLoading] = useState(true);
-
-    const getInitials = (name: string) => {
-        if (!name) return "NA";
-        return name
-            .split(" ")
-            .filter(Boolean)
-            .map((word) => word[0])
-            .join("")
-            .slice(0, 2)
-            .toUpperCase();
-    };
-
+    useEffect(() => {
     const fetchProfile = async () => {
         try {
-            setLoading(true);
-
-            const token = localStorage.getItem("customerToken");
-
-            const res = await axios.post(
+            const res = await axios.post<CustomerProfileResponse>(
                 `${apiUrl}/reg/getuserprofile`,
                 {},
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: getCustomerAuthHeader(),
                 }
             );
 
@@ -79,15 +55,15 @@ export default function CustomerProfilePage() {
         }
     };
 
-    useEffect(() => {
-        fetchProfile();
-    }, []);
+    fetchProfile();
+}, []);
 
     return (
         <main className="min-h-screen bg-slate-50 py-12 px-6 lg:px-8 font-sans selection:bg-primary/20">
             <div className="mx-auto max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-out">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b border-slate-200 pb-8">
                     <div className="space-y-1">
+
                         <h1 className="text-4xl font-bold tracking-tight text-primary md:text-5xl">
                             Account <span className="text-accent font-light">Settings</span>
                         </h1>
