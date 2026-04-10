@@ -66,7 +66,6 @@ const ForgotPassword = () => {
                     transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
                     className="absolute -top-[10%] -left-[10%] w-[70%] h-[70%] bg-primary rounded-full blur-[140px]"
                 />
-
                 <motion.div
                     animate={{
                         scale: [1, 1.2, 1],
@@ -77,46 +76,6 @@ const ForgotPassword = () => {
                     className="absolute -bottom-[10%] -right-[10%] w-[70%] h-[70%] bg-primary rounded-full blur-[140px]"
                 />
 
-                {[...Array(20)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{
-                            x: Math.random() * 100 + "%",
-                            y: Math.random() * 100 + "%",
-                            opacity: 0,
-                            scale: Math.random() * 0.5 + 0.5
-                        }}
-                        animate={{
-                            y: ["0%", "-20%"],
-                            opacity: [0, 0.6, 0],
-                        }}
-                        transition={{
-                            duration: Math.random() * 5 + 5,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            delay: Math.random() * 5
-                        }}
-                        className="absolute w-1 h-1 bg-accent rounded-full shadow-[0_0_10px_#70a0bf] pointer-events-none"
-                    />
-                ))}
-
-                <motion.div
-                    animate={{ rotate: 360, opacity: [0.1, 0.2, 0.1] }}
-                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-[15%] right-[20%] text-accent/30"
-                >
-                    <Bot size={120} strokeWidth={0.5} />
-                </motion.div>
-
-                <motion.div
-                    animate={{ y: [0, -30, 0], opacity: [0.05, 0.15, 0.05] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute bottom-[20%] left-[15%] text-secondary"
-                >
-                    <Zap size={80} fill="currentColor" />
-                </motion.div>
-
-                <div className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
             </div>
 
             <motion.div
@@ -168,7 +127,7 @@ const ForgotPassword = () => {
                                     placeholder="name@enterprise-ai.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full bg-[#0a0f16] text-white border border-primary px-6 py-4 rounded-2xl focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all placeholder:text-slate-700 font-mono text-sm"
+                                    className="w-full bg-[#0a0f16] text-white border border-primary px-6 py-4 rounded-2xl  focus:border-accent  transition-all placeholder:text-slate-700 font-mono text-sm"
                                 />
                                 <Mail className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-accent transition-colors" size={18} />
                             </div>

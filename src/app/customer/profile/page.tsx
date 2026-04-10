@@ -1,6 +1,6 @@
 "use client";
 
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
 import {
@@ -21,6 +21,7 @@ type ProfileData = {
     email: string;
     companyname: string;
     phone: string | number;
+    url: string;
 };
 
 export default function CustomerProfilePage() {
@@ -28,6 +29,7 @@ export default function CustomerProfilePage() {
         email: "",
         companyname: "",
         phone: "",
+        url: "",
     });
 
     const [loading, setLoading] = useState(true);
@@ -64,6 +66,7 @@ export default function CustomerProfilePage() {
                     email: res?.data?.data?.email || "",
                     companyname: res?.data?.data?.companyname || "",
                     phone: res?.data?.data?.phone || "",
+                    url: res?.data?.data?.url || "",
                 });
             }
         } catch (error: any) {
@@ -147,7 +150,7 @@ export default function CustomerProfilePage() {
                         </div>
                     </section>
 
-                    <section className="md:col-span-7 lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in fade-in slide-in-from-right-8 duration-700 delay-300 fill-mode-both">
+                    {/* <section className="md:col-span-7 lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in fade-in slide-in-from-right-8 duration-700 delay-300 fill-mode-both">
                         <div className="sm:col-span-2 group rounded-4xl bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
@@ -160,6 +163,8 @@ export default function CustomerProfilePage() {
                                     <p className="mt-1 text-xl font-bold text-primary">
                                         {loading ? "Loading..." : profile.companyname || "N/A"}
                                     </p>
+
+
                                 </div>
                                 <div className="h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center text-secondary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-inner">
                                     <FiShield size={24} />
@@ -192,12 +197,139 @@ export default function CustomerProfilePage() {
                                 {loading ? "Loading..." : profile.phone || "N/A"}
                             </p>
                         </div>
+                        <div className="group rounded-4xl bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
+                            <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-secondary mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                                <FiGlobe size={22} />
+                            </div>
+
+                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-accent mb-1">
+                                Online Presence
+                            </label>
+
+                            <p className="text-xs font-bold text-slate-400">Website URL</p>
+
+                            {loading ? (
+                                <p className="mt-1 text-[15px] font-bold text-primary">Loading...</p>
+                            ) : profile.url ? (
+                                <a
+                                    href={
+                                        profile.url.startsWith("http://") || profile.url.startsWith("https://")
+                                            ? profile.url
+                                            : `https://${profile.url}`
+                                    }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-1 inline-block text-[15px] font-bold text-primary break-all hover:text-secondary underline underline-offset-4 transition-colors"
+                                >
+                                    {profile.url}
+                                </a>
+                            ) : (
+                                <p className="mt-1 text-[15px] font-bold text-primary">N/A</p>
+                            )}
+                        </div>
 
                         <div className="sm:col-span-2 flex items-center justify-between rounded-3xl bg-primary p-6 text-white shadow-lg overflow-hidden relative">
                             <div className="absolute right-0 top-0 h-full w-32 bg-secondary/20 skew-x-[-20deg] translate-x-12" />
 
                             <div className="flex items-center gap-4 relative z-10">
                                 <div className="h-2 w-2 rounded-full bg-accent animate-pulse" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">
+                                    Encrypted Protocol Active
+                                </span>
+                            </div>
+
+                            <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white hover:text-accent transition-colors relative z-10">
+                                Security Logs
+                                <FiArrowRight />
+                            </button>
+                        </div>
+                    </section> */}
+                    <section className="md:col-span-7 lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in fade-in slide-in-from-right-8 duration-700 delay-300 fill-mode-both">
+                        <div className="sm:col-span-2 group rounded-[2rem] bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="space-y-1 min-w-0">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">
+                                        Company Identifier
+                                    </label>
+                                    <p className="text-xs font-bold text-slate-400">Company Name</p>
+                                    <p className="mt-1 text-xl font-bold text-primary break-words">
+                                        {loading ? "Loading..." : profile.companyname || "N/A"}
+                                    </p>
+                                </div>
+
+                                <div className="h-14 w-14 shrink-0 rounded-2xl bg-slate-50 flex items-center justify-center text-secondary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-inner">
+                                    <FiShield size={24} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="group min-h-[200px] rounded-[2rem] bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
+                            <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-secondary mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                                <FiMail size={22} />
+                            </div>
+
+                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-accent mb-1">
+                                Communication
+                            </label>
+                            <p className="text-xs font-bold text-slate-400">Primary Email</p>
+                            <p className="mt-2 text-[15px] font-bold text-primary break-all leading-7">
+                                {loading ? "Loading..." : profile.email || "N/A"}
+                            </p>
+                        </div>
+
+                        <div className="group min-h-[200px] rounded-[2rem] bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
+                            <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-secondary mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                                <FiPhone size={22} />
+                            </div>
+
+                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-accent mb-1">
+                                Connection
+                            </label>
+                            <p className="text-xs font-bold text-slate-400">Mobile Uplink</p>
+                            <p className="mt-2 text-[15px] font-bold text-primary break-all leading-7">
+                                {loading ? "Loading..." : profile.phone || "N/A"}
+                            </p>
+                        </div>
+
+                        <div className="sm:col-span-2 group rounded-[2rem] bg-white p-8 border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:border-accent/30">
+                            <div className="flex items-start gap-5">
+                                <div className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-50 text-secondary group-hover:scale-110 transition-transform shadow-inner">
+                                    <FiGlobe size={22} />
+                                </div>
+
+                                <div className="min-w-0 flex-1">
+                                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-accent mb-1">
+                                        Online Presence
+                                    </label>
+                                    <p className="text-xs font-bold text-slate-400">Website URL</p>
+
+                                    {loading ? (
+                                        <p className="mt-2 text-[15px] font-bold text-primary">Loading...</p>
+                                    ) : profile.url ? (
+                                        <a
+                                            href={
+                                                profile.url.startsWith("http://") || profile.url.startsWith("https://")
+                                                    ? profile.url
+                                                    : `https://${profile.url}`
+                                            }
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="mt-2 inline-block text-[15px] font-bold text-primary break-all leading-7 hover:text-secondary underline underline-offset-4 transition-colors"
+                                        >
+                                            {profile.url.replace(/^https?:\/\//, "")}
+                                        </a>
+                                    ) : (
+                                        <p className="mt-2 text-[15px] font-bold text-primary">N/A</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="sm:col-span-2 flex items-center justify-between rounded-[2rem] bg-primary px-6 py-6 text-white shadow-lg overflow-hidden relative">
+                            <div className="absolute right-0 top-0 h-full w-32 bg-secondary/20 skew-x-[-20deg] translate-x-12" />
+
+                            <div className="flex items-center gap-4 relative z-10">
+                                <div className="h-2.5 w-2.5 rounded-full bg-accent animate-pulse" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">
                                     Encrypted Protocol Active
                                 </span>
