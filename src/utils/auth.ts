@@ -5,3 +5,12 @@ export const getAuthHeader = () => {
     Authorization: `Bearer ${token}`,
   };
 };
+
+
+export const getCustomerAuthHeader = () => {
+  const token = localStorage.getItem("customerToken");
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+};

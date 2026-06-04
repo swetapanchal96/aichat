@@ -4,8 +4,10 @@
 import  { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { apiUrl } from "@/config";
-import { toast } from "react-toastify";
+import axios from 'axios';
+import { getCustomerAuthHeader } from '@/utils/auth';
+import { toast } from 'react-toastify';
+import { apiUrl } from '@/config';
 
 // Refined UI Constants using your theme
 const labelCls =
@@ -26,257 +28,164 @@ type PasswordForm = {
     confirmedpass: string;
 };
 
+interface CustomerProfileResponse {
+    success: boolean;
+    message: string;
+    data: {
+        id: string;
+        email: string;
+        trial_start: string;
+        trial_end: string;
+        is_paid: boolean;
+        created_at: string;
+        company_id: string;
+        companyname: string;
+        isactive: boolean;
+        script: string;
+        phone: number | string;
+    };
+}
+
 export default function CustomerEditProfilePage() {
     const router = useRouter();
 
     const [tab, setTab] = useState<"details" | "password">("details");
-    const [showPass, setShowPass] = useState({
-        old: false,
-        new: false,
-        confirm: false,
-    });
+    const [isSaving, setIsSaving] = useState(false);
+    const [showPass, setShowPass] = useState({ old: false, new: false, confirm: false });
 
-    const [loading, setLoading] = useState(false);
-    const [passwordLoading, setPasswordLoading] = useState(false);
-
-    const [profileForm, setProfileForm] = useState<ProfileForm>({
-        name: "",
+    const [profile, setProfile] = useState({
+        fullName: "",
         email: "",
         phone: "",
     });
 
-    const [passwordForm, setPasswordForm] = useState<PasswordForm>({
+    const [passwordData, setPasswordData] = useState({
         oldpass: "",
         changedpass: "",
-        confirmedpass: "",
+        confirmedpass: ""
     });
 
-    const getToken = () => {
-        return localStorage.getItem("customerToken") || "";
-    };
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await axios.post<CustomerProfileResponse>(
+                    `${apiUrl}/reg/getuserprofile`,
+                    {},
+                    {
+                        headers: getCustomerAuthHeader(),
+                    }
+                );
 
-    const getLocalCustomerData = () => {
-        if (typeof window === "undefined") return null;
+                const data = res.data;
 
-        const stored = localStorage.getItem("customerData");
-        if (!stored) return null;
-
-        try {
-            return JSON.parse(stored);
-        } catch (error) {
-            console.error("customerData parse error:", error);
-            return null;
-        }
-    };
-
-    const setLocalCustomerData = (data: any) => {
-        if (typeof window === "undefined") return;
-
-        const oldData = getLocalCustomerData() || {};
-
-        const updatedData = {
-            ...oldData,
-            email: data?.email || oldData?.email || "",
-            companyname: data?.companyname || oldData?.companyname || "",
-            phone: String(data?.phone || oldData?.phone || ""),
-        };
-
-        localStorage.setItem("customerData", JSON.stringify(updatedData));
-    };
-
-    const fetchProfileFromLocalStorage = () => {
-        const localData = getLocalCustomerData();
-
-        if (localData) {
-            setProfileForm({
-                name: localData?.companyname || "",
-                email: localData?.email || "",
-                phone: String(localData?.phone || ""),
-            });
-        }
-    };
-
-    const fetchProfileFromApi = async () => {
-        try {
-            const token = getToken();
-            if (!token) return;
-
-            const res = await axios.post(
-                `${apiUrl}/reg/getuserprofile`,
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            if (res?.data?.success) {
-                const apiData = res?.data?.data || {};
-
-                setProfileForm({
-                    name: apiData?.companyname || "",
-                    email: apiData?.email || "",
-                    phone: String(apiData?.phone || ""),
+                setProfile({
+                    fullName: data.data.companyname || "",
+                    email: data.data.email || "",
+                    phone: data.data.phone ? String(data.data.phone) : "", // 🔥 FIX
                 });
 
-                setLocalCustomerData(apiData);
-            }
-        } catch (error: any) {
-            console.error(
-                "Get profile error:",
-                error?.response?.data || error?.message
-            );
-        }
-    };
 
-    useEffect(() => {
-        fetchProfileFromLocalStorage();
-        fetchProfileFromApi();
+            } catch (error: any) {
+                toast.error(error?.response?.data?.message);
+                // console.error("Failed to fetch profile", error);
+            }
+        };
+
+        fetchProfile();
     }, []);
 
-    const handleProfileChange = (field: keyof ProfileForm, value: string) => {
-        setProfileForm((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    };
-
-    const handlePasswordChange = (
-        field: keyof PasswordForm,
-        value: string
-    ) => {
-        setPasswordForm((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    };
 
     const handleUpdateProfile = async () => {
         try {
-            setLoading(true);
-
-            const token = getToken();
-            if (!token) {
-                toast.error("Token not found. Please login again.");
-                return;
-            }
+            setIsSaving(true);
 
             const payload = {
-                name: profileForm.name,
-                email: profileForm.email,
-                phone: profileForm.phone,
+                name: profile.fullName,
+                email: profile.email,
+                phone: profile.phone, // already string (API will handle)
             };
 
             const res = await axios.post(
-                `${apiUrl}/reg/updateuserprofile`,
+                `${apiUrl}/reg/edituserprofile`,
                 payload,
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: getCustomerAuthHeader(),
                 }
             );
 
-            if (res?.data?.success) {
-                const updatedData = res?.data?.data || {};
-
-                setProfileForm({
-                    name: updatedData?.companyname || profileForm.name,
-                    email: updatedData?.email || profileForm.email,
-                    phone: String(updatedData?.phone || profileForm.phone),
-                });
-
-                setLocalCustomerData(updatedData);
+            if (res.data.success) {
+                console.log("Profile updated successfully");
 
                 toast.success(res?.data?.message || "Profile updated successfully");
-            } else {
-                toast.error(res?.data?.message || "Failed to update profile");
+
+                // Optional: update state with latest response
+                setProfile({
+                    fullName: res.data.data.companyname || "",
+                    email: res.data.data.email || "",
+                    phone: res.data.data.phone
+                        ? String(res.data.data.phone)
+                        : "",
+                });
             }
+
         } catch (error: any) {
-            console.error(
-                "Update profile error:",
-                error?.response?.data || error?.message
-            );
-            toast.error(
-                error?.response?.data?.message ||
-                "Something went wrong while updating profile"
-            );
+            // console.error("Update failed", error);
+            toast.error(error?.response?.data?.message);
         } finally {
-            setLoading(false);
+            setIsSaving(false);
         }
     };
 
-
     const handleChangePassword = async () => {
         try {
-            setPasswordLoading(true);
+            setIsSaving(true);
 
-            const token = getToken();
-            if (!token) {
-                toast.error("Token not found. Please login again.");
-                return;
-            }
-
+            // 🔒 Basic validation
             if (
-                !passwordForm.oldpass ||
-                !passwordForm.changedpass ||
-                !passwordForm.confirmedpass
+                !passwordData.oldpass ||
+                !passwordData.changedpass ||
+                !passwordData.confirmedpass
             ) {
-                toast.error("Please fill all password fields");
+                console.error("All fields are required");
                 return;
             }
 
-            if (passwordForm.changedpass !== passwordForm.confirmedpass) {
-                toast.error("New password and confirm password do not match");
+            if (passwordData.changedpass !== passwordData.confirmedpass) {
+                console.error("Passwords do not match");
                 return;
             }
 
             const payload = {
-                oldpass: passwordForm.oldpass,
-                changedpass: passwordForm.changedpass,
-                confirmedpass: passwordForm.confirmedpass,
+                oldpass: passwordData.oldpass,
+                changedpass: passwordData.changedpass,
+                confirmedpass: passwordData.confirmedpass,
             };
 
             const res = await axios.post(
                 `${apiUrl}/reg/changeuserpassword`,
                 payload,
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: getCustomerAuthHeader(),
                 }
             );
 
-            if (res?.data?.success) {
-                toast.success(res?.data?.message || "Password updated successfully");
-
-                setPasswordForm({
+            if (res.data.success) {
+                
+                // Clear fields after success
+                setPasswordData({
                     oldpass: "",
                     changedpass: "",
-                    confirmedpass: "",
+                    confirmedpass: ""
                 });
-            } else {
-                toast.error(res?.data?.message || "Failed to update password");
+
+                toast.success(res?.data?.message || "Password updated successfully")
             }
-        } catch (error: any) {
-            console.error(
-                "Change password error:",
-                error?.response?.data || error?.message
-            );
-            toast.error(
-                error?.response?.data?.message ||
-                "Something went wrong while changing password"
-            );
+
+        } catch (error:any) {
+            console.error("Password update failed", error);
+            toast.error(error?.response?.data?.message || "Password update failed")
         } finally {
-            setPasswordLoading(false);
-        }
-    };
-    const handleSubmit = () => {
-        if (tab === "details") {
-            handleUpdateProfile();
-        } else {
-            handleChangePassword();
+            setIsSaving(false);
         }
     };
 
@@ -312,9 +221,7 @@ export default function CustomerEditProfilePage() {
                     <div className="flex bg-gray-100/80 p-1.5 rounded-2xl border border-gray-200/50 backdrop-blur-sm shadow-inner">
                         <button
                             onClick={() => setTab("details")}
-                            className={`flex items-center gap-3 px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${tab === "details"
-                                ? "bg-white text-primary shadow-md scale-[1.02]"
-                                : "text-gray-400 hover:text-primary"
+                            className={`flex items-center cursor-pointer gap-3 px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${tab === "details" ? "bg-white text-primary shadow-md scale-[1.02]" : "text-gray-400 hover:text-primary"
                                 }`}
                         >
                             <svg
@@ -335,9 +242,7 @@ export default function CustomerEditProfilePage() {
 
                         <button
                             onClick={() => setTab("password")}
-                            className={`flex items-center gap-3 px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${tab === "password"
-                                ? "bg-white text-primary shadow-md scale-[1.02]"
-                                : "text-gray-400 hover:text-primary"
+                            className={`flex items-center cursor-pointer gap-3 px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${tab === "password" ? "bg-white text-primary shadow-md scale-[1.02]" : "text-gray-400 hover:text-primary"
                                 }`}
                         >
                             <svg
@@ -386,12 +291,9 @@ export default function CustomerEditProfilePage() {
                                             </svg>
                                         </div>
                                         <input
-                                            value={profileForm.name}
-                                            onChange={(e) =>
-                                                handleProfileChange("name", e.target.value)
-                                            }
+                                            value={profile.fullName}
+                                            onChange={(e) => setProfile({ ...profile, fullName: e.target.value })}
                                             className={inputCls}
-                                            placeholder="Enter name"
                                         />
                                     </div>
                                 </div>
@@ -415,13 +317,9 @@ export default function CustomerEditProfilePage() {
                                             </svg>
                                         </div>
                                         <input
-                                            value={profileForm.phone}
-                                            onChange={(e) =>
-                                                handleProfileChange("phone", e.target.value)
-                                            }
-                                            className={inputCls}
-                                            placeholder="Enter phone number"
-                                        />
+                                            value={profile.phone}
+                                            onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                                            className={inputCls} />
                                     </div>
                                 </div>
                             </div>
@@ -445,32 +343,47 @@ export default function CustomerEditProfilePage() {
                                         </svg>
                                     </div>
                                     <input
-                                        value={profileForm.email}
-                                        onChange={(e) =>
-                                            handleProfileChange("email", e.target.value)
-                                        }
+                                        value={profile.email}
+                                        onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                                         className={inputCls}
-                                        placeholder="Enter email address"
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <div
-                            className={`${tab === "password"
-                                ? "block animate-in fade-in slide-in-from-right-4 duration-500"
-                                : "hidden"
-                                } space-y-6 max-w-2xl`}
-                        >
-                            <div className="group">
-                                <label className={labelCls}>Old Password</label>
-                                <div className="relative">
-                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors">
-                                        <svg
-                                            className="w-5 h-5"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
+                        {/* Tab Content: Security */}
+                        <div className={`${tab === "password" ? "block animate-in fade-in slide-in-from-right-4 duration-500" : "hidden"} space-y-6 max-w-2xl`}>
+                            {["old", "new", "confirm"].map((field) => (
+                                <div key={field} className="group">
+                                    <label className={labelCls}>{field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} Password</label>
+                                    <div className="relative">
+                                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors">
+                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                        </div>
+                                        <input
+                                            type={showPass[field as keyof typeof showPass] ? "text" : "password"}
+                                            value={
+                                                field === "old"
+                                                    ? passwordData.oldpass
+                                                    : field === "new"
+                                                        ? passwordData.changedpass
+                                                        : passwordData.confirmedpass
+                                            }
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setPasswordData(prev => ({
+                                                    ...prev,
+                                                    ...(field === "old" && { oldpass: value }),
+                                                    ...(field === "new" && { changedpass: value }),
+                                                    ...(field === "confirm" && { confirmedpass: value }),
+                                                }));
+                                            }}
+                                            className={inputCls}
+                                            placeholder="••••••••"
+                                        />
+                                        <button
+                                            onClick={() => setShowPass(p => ({ ...p, [field]: !p[field as keyof typeof showPass] }))}
+                                            className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 hover:text-primary transition-colors"
                                         >
                                             <path
                                                 strokeLinecap="round"
@@ -703,31 +616,10 @@ export default function CustomerEditProfilePage() {
                             </div>
 
                             <button
-                                type="button"
-                                onClick={handleSubmit}
-                                disabled={loading || passwordLoading}
-                                className="w-full sm:w-auto bg-primary text-white px-12 py-4.5 rounded-2xl font-black text-[12px] uppercase tracking-[0.2em] shadow-lg shadow-primary/10 hover:shadow-accent/20 transition-all duration-300 flex items-center justify-center gap-4 active:scale-95 group disabled:opacity-70 disabled:cursor-not-allowed"
-                            >
-                                {tab === "details"
-                                    ? loading
-                                        ? "Saving..."
-                                        : "Save Identity"
-                                    : passwordLoading
-                                        ? "Updating..."
-                                        : "Update Security"}
-                                <svg
-                                    className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={3}
-                                        d="M9 5l7 7-7 7"
-                                    />
-                                </svg>
+                                onClick={tab === "details" ? handleUpdateProfile : handleChangePassword}
+                                className="w-full cursor-pointer sm:w-auto bg-primary text-white px-12 py-4.5 rounded-2xl font-black text-[12px] uppercase tracking-[0.2em] shadow-lg shadow-primary/10 hover:shadow-accent/20 transition-all duration-300 flex items-center justify-center gap-4 active:scale-95 group">
+                                {isSaving ? "Saving..." : (tab === "details" ? "Save Identity" : "Update Security")}
+                                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
                             </button>
                         </div>
                     </div>

@@ -47,8 +47,9 @@ const SuperAdminHeader = () => {
             // Even if API fails, still logout locally
 
             localStorage.removeItem("superadmintoken");
+            // localStorage.removeItem("superadmintoken");
             toast.error(error?.response?.data?.message || "logout error");
-            router.push("/superadmin/logout");
+            // router.push("/superadmin/logout");
         }
     };
 
@@ -63,7 +64,7 @@ const SuperAdminHeader = () => {
 
                 {/* Left: Branding */}
                 <div className="flex items-center space-x-12">
-                    <Link href="/" className="transition-transform duration-300 hover:scale-105 active:scale-95">
+                    <Link href="/superadmin/dashboard" className="transition-transform duration-300 hover:scale-105 active:scale-95">
                         <Image
                             src={logo}
                             alt="Salexo"
@@ -96,7 +97,7 @@ const SuperAdminHeader = () => {
                 <div className="relative">
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className={`flex items-center p-1.5 rounded-full border transition-all duration-300 ${isOpen ? 'border-accent bg-background shadow-inner' : 'border-transparent hover:bg-gray-50'
+                        className={`flex items-center cursor-pointer p-1.5 rounded-full border transition-all duration-300 ${isOpen ? 'border-accent bg-background shadow-inner' : 'border-transparent hover:bg-gray-50'
                             }`}
                     >
                         <div className="w-8 h-8 rounded-full bg-linear-to-tr from-primary to-secondary flex items-center justify-center text-white shadow-md hover:rotate-12 transition-transform duration-300">

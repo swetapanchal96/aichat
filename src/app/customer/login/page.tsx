@@ -333,12 +333,16 @@ const UltimateCustomerLogin = () => {
         localStorage.setItem("customerData", JSON.stringify(resData.data));
       }
 
+      // alert(resData?.message || "Login successful");
       toast.success(resData?.message || "Login successful");
       router.push("/customer/dashboard");
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "Login failed. Please try again."
-      );
+      console.error("Login error:", error);
+
+      // alert(
+      //   error?.response?.data?.message || "Login failed. Please try again."
+      // );
+      toast.error(error?.response?.data?.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
